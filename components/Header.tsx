@@ -4,7 +4,7 @@ import React from "react";
 
 const Header = () => {
   return (
-    <header className="flex items-center justify-center max-w-7xl mx-auto border">
+    <header className="flex w-full items-center justify-center max-w-7xl mx-auto border">
       <div className="w-full border border-red-500 flex items-center justify-between">
         <Image src="/images/logo.png" alt="Logo" width={100} height={100} />
         <ul className="w-full flex items-center justify-center space-x-4">
