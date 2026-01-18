@@ -4,17 +4,22 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-primary-green: var(--primary-green);
+  --color-secondary-green: var(--secondary-green);
+}
+
 :root {
   --base-100: #fafaf0;
   --base-200: #deded5;
-  --base-300: #0f0f0f;
+  --base-300: #1f1d1d;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #e9e9e9;
+  --foreground: #1f1d1d;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(9.962% 0.017 20.511);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -40,12 +45,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  --secondary-green: #e1ffb3;
+  --primary-green: #bff172;
 }
 
 body {
