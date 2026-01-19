@@ -27,7 +27,10 @@ const Header = () => {
           ))}
         </ul>
 
-        <Pill href="/contact" className="shrink-0 whitespace-nowrap px-4 py-2">
+        <Pill
+          href="/contact"
+          className="shrink-0 bg-primary-green whitespace-nowrap px-4 py-2"
+        >
           Kontakt
           <Image
             src={arrow_icon}

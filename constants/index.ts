@@ -30,3 +30,6 @@ export const close_icon = "/icons/cross.svg";
 export const hero_4 = "/images/hero-images/hero_4.avif";
 export const hero_2 = "/images/hero-images/hero_2.avif";
 export const hero_3 = "/images/hero-images/hero_3.avif";
+export const hero_6 = "/images/hero-images/hero_6.avif";
+export const hero_7 = "/images/hero-images/hero_7.avif";
+export const hero_8 = "/images/hero-images/hero_8.avif";
