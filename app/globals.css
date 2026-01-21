@@ -165,3 +165,24 @@ p,
     @apply bg-background text-foreground;
   }
 }
+
+/* cały scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* tło scrollbara */
+::-webkit-scrollbar-track {
+  background: #e9e9e9;
+  border-radius: 10px;
+}
+
+/* suwak */
+::-webkit-scrollbar-thumb {
+  background: #d1d5dc; /* np. zielony */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5dc;
+}
