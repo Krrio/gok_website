@@ -1,17 +1,36 @@
+"use client";
+
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import { arrow_icon, hero_6, hero_8 } from "@/constants";
+import { gsap } from "gsap";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useEffect, useRef } from "react";
 
 const Hero = () => {
   const linkLabel = "Sprawdź wydarzenia";
   const kulturaLabel = "Kultura";
   const dladzieciLabel = "Dla dzieci";
   const signupLabel = "Zapisz się";
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!rootRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from("[data-hero-animate]", {
+        opacity: 0,
+        y: 12,
+        duration: 0.4,
+        ease: "power1.inOut",
+        stagger: 0.06,
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div className="h-screen w-full p-4 md:mt-8 flex flex-col">
+    <div ref={rootRef} className="h-screen w-full p-4 md:mt-8 flex flex-col">
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-center md:text-left">
           Poznaj nas.
@@ -22,7 +41,10 @@ const Hero = () => {
       </div>
       <div className="w-full flex md:flex-row flex-col h-3/5  md:space-x-4 space-y-4 md:space-y-0 relative">
         <div className="w-full md:w-1/4 h-full relative flex flex-col space-y-4 items-center justify-end md:pt-20">
-          <div className="bg-[#cff29e] rounded-2xl w-full h-full">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-full"
+            data-hero-animate
+          >
             <div className="w-full h-full overflow-hidden flex items-end justify-center">
               <Image
                 src={hero_8}
@@ -38,6 +60,7 @@ const Hero = () => {
           <Link
             href="/events"
             className="group cursor-pointer select-none border bg-gray-300/20 rounded-full w-full min-h-14 flex items-center justify-center space-x-2 font-semibold flex-row px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)] hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={linkLabel} />
 
@@ -59,6 +82,7 @@ const Hero = () => {
              w-full min-h-14 flex items-center justify-center space-x-2 font-semibold
              px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)]
              hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={kulturaLabel} />
 
@@ -71,7 +95,10 @@ const Hero = () => {
               draggable={false}
             />
           </Link>
-          <div className="bg-[#cff29e] rounded-2xl w-full h-1/2 flex flex-col justify-between px-8 py-6 space-y-4">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-1/2 flex flex-col justify-between px-8 py-6 space-y-4"
+            data-hero-animate
+          >
             <p className="p">7.</p>
             <p className="text-lg!">
               Tyle zorganizowaliśmy w Gorzycach{" "}
@@ -84,7 +111,10 @@ const Hero = () => {
         </div>
 
         <div className="md:hidden w-full md:w-1/4 h-full relative flex flex-col space-y-4 items-center justify-end">
-          <div className="bg-[#cff29e] rounded-2xl w-full h-full flex flex-col justify-between px-8 py-6 space-y-4">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-full flex flex-col justify-between px-8 py-6 space-y-4"
+            data-hero-animate
+          >
             <p className="p">7.</p>
             <p className="text-lg!">
               Tyle zorganizowaliśmy w Gorzycach{" "}
@@ -100,6 +130,7 @@ const Hero = () => {
              w-full min-h-14 flex items-center justify-center space-x-2 font-semibold
              px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)]
              hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={kulturaLabel} />
 
@@ -115,7 +146,10 @@ const Hero = () => {
         </div>
 
         <div className="w-full md:w-1/4 h-full relative flex flex-col space-y-4 items-center justify-end md:pt-20">
-          <div className="bg-[#cff29e] rounded-2xl w-full h-full md:h-[70%] px-8 py-6 space-y-4 flex flex-col justify-between">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-full md:h-[70%] px-8 py-6 space-y-4 flex flex-col justify-between"
+            data-hero-animate
+          >
             <p className="p">20+</p>
             <p className="text-lg! text-center">
               Lat tworzona społeczność{" "}
@@ -132,6 +166,7 @@ const Hero = () => {
              w-full min-h-14 flex items-center justify-center space-x-2 font-semibold
              px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)]
              hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={signupLabel} />
 
@@ -150,6 +185,7 @@ const Hero = () => {
           <Link
             href="/events"
             className="group cursor-pointer select-none border bg-gray-300/20 rounded-full w-full min-h-14 flex items-center justify-center space-x-2 font-semibold flex-row px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)] hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={dladzieciLabel} />
 
@@ -162,7 +198,10 @@ const Hero = () => {
               draggable={false}
             />
           </Link>
-          <div className="bg-[#cff29e] rounded-2xl w-full h-5/6 px-6 py-4 flex flex-col justify-between space-y-4">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-5/6 px-6 py-4 flex flex-col justify-between space-y-4"
+            data-hero-animate
+          >
             <div className="w-full h-full bg-primary-green rounded-xl mt-2 overflow-hidden">
               <Image
                 src={hero_6}
@@ -184,7 +223,10 @@ const Hero = () => {
         </div>
 
         <div className="w-full md:w-1/4 h-full relative md:hidden flex flex-col space-y-4 items-center justify-end">
-          <div className="bg-[#cff29e] rounded-2xl w-full h-5/6 px-6 py-4 flex flex-col justify-between space-y-4">
+          <div
+            className="bg-[#cff29e] rounded-2xl w-full h-5/6 px-6 py-4 flex flex-col justify-between space-y-4"
+            data-hero-animate
+          >
             <div className="w-full h-full bg-primary-green rounded-xl mt-2 overflow-hidden">
               <Image
                 src={hero_6}
@@ -206,6 +248,7 @@ const Hero = () => {
           <Link
             href="/events"
             className="group cursor-pointer select-none border bg-gray-300/20 rounded-full w-full min-h-14 flex items-center justify-center space-x-2 font-semibold flex-row px-4 border-gray-300/20 shadow-[inset_0_0px_1px_rgba(0,0,0,0.2)] hover:bg-gray-300/30 transition-colors"
+            data-hero-animate
           >
             <AnimatedButtonText text={dladzieciLabel} />
 
