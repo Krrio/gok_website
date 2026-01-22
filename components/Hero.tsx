@@ -30,13 +30,20 @@ const Hero = () => {
   }, []);
 
   return (
-    <div ref={rootRef} className="h-screen w-full p-4 md:mt-8 flex flex-col">
+    <div
+      ref={rootRef}
+      className="h-full md:h-dvh w-full p-4 md:mt-8 flex flex-col"
+    >
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-center md:text-left">
           Poznaj nas.
         </h1>
         <p className="md:text-[24px]! text-[20px]! text-gray-600">
-          Dowiedz się więcej o naszej działalności i ofercie kulturalnej.
+          Dowiedz się więcej o naszej działalności i{" "}
+          <span className="px-1 bg-gray-300/40 rounded-[5px]">
+            ofercie kulturalnej
+          </span>
+          .
         </p>
       </div>
       <div className="w-full flex md:flex-row flex-col h-3/5  md:space-x-4 space-y-4 md:space-y-0 relative">
