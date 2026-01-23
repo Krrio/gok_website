@@ -33,3 +33,9 @@ export const hero_3 = "/images/hero-images/hero_3.avif";
 export const hero_6 = "/images/hero-images/hero_6.avif";
 export const hero_7 = "/images/hero-images/hero_7.avif";
 export const hero_8 = "/images/hero-images/hero_8.avif";
+
+// exercise photos
+export const exercises_1 = "/images/exercises-images/exercises_1.avif";
+export const exercises_2 = "/images/exercises-images/exercises_2.avif";
+export const exercises_3 = "/images/exercises-images/exercises_3.avif";
+export const exercises_4 = "/images/exercises-images/exercises_4.avif";

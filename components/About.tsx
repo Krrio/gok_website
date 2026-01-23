@@ -2,9 +2,9 @@ import React from "react";
 import EventCard from "./EventCard";
 import { hero_8 } from "@/constants";
 
-const About = () => {
+const Events = () => {
   return (
-    <div className="h-full md:h-dvh w-full p-4 flex flex-col md:-mt-16">
+    <div className="h-full w-full p-4 flex flex-col md:-mt-16">
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
           Nadchodzące wydarzenia
@@ -48,4 +48,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default Events;
