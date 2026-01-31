@@ -1,4 +1,5 @@
-import Events from "@/components/About";
+import Contests from "@/components/Contests";
+import Events from "@/components/Events";
 import Exercises from "@/components/Exercises";
 import Hero from "@/components/Hero";
 
@@ -8,6 +9,7 @@ const Home = () => {
       <Hero />
       <Events />
       <Exercises />
+      <Contests />
     </div>
   );
 };

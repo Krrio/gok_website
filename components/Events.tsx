@@ -1,6 +1,13 @@
 import React from "react";
 import EventCard from "./EventCard";
-import { hero_8 } from "@/constants";
+import {
+  events_1,
+  events_2,
+  events_3,
+  events_4,
+  events_5,
+  hero_8,
+} from "@/constants";
 
 const Events = () => {
   return (
@@ -21,25 +28,25 @@ const Events = () => {
           description={
             "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quia iste veniam deserunt labore iusto accusamus vero rem, eos id officia! Mollitia sed provident dolorum veniam numquam deleniti, aspernatur libero."
           }
-          photo={hero_8}
+          photo={events_1}
           href={""}
           direction={"left"}
         />
         <EventCard
-          title={"Koncert Noworoczny"}
+          title={"Spotkanie z autorem"}
           description={
             "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quia iste veniam deserunt labore iusto accusamus vero rem, eos id officia! Mollitia sed provident dolorum veniam numquam deleniti, aspernatur libero."
           }
-          photo={hero_8}
+          photo={events_2}
           href={""}
           direction={"right"}
         />
         <EventCard
-          title={"Koncert Noworoczny"}
+          title={"Występ teateralny"}
           description={
             "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quia iste veniam deserunt labore iusto accusamus vero rem, eos id officia! Mollitia sed provident dolorum veniam numquam deleniti, aspernatur libero."
           }
-          photo={hero_8}
+          photo={events_5}
           href={""}
           direction={"left"}
         />

@@ -20,11 +20,11 @@ const EventCard = ({
 }: EventCardProps) => {
   return (
     <article
-      className={`w-full h-80 flex flex-col md:flex-row items-stretch rounded-3xl overflow-hidden gap-0 md:gap-4 ${
+      className={`w-full h-80 flex flex-col md:flex-row relative items-stretch rounded-3xl overflow-hidden gap-0 md:gap-4 ${
         direction === "right" ? "md:flex-row-reverse" : ""
       }`}
     >
-      <div className="relative w-full md:w-1/3 h-64 md:h-auto bg-primary-green rounded-t-2xl rounded-b-none md:rounded-xl">
+      <div className="relative w-full md:w-1/3 h-64 md:h-auto bg-primary-green rounded-t-2xl overflow-hidden frounded-b-none md:rounded-xl">
         <Image
           src={photo}
           alt={title}
