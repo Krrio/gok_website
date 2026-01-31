@@ -18,7 +18,7 @@ const Contests = () => {
         </p>
       </div>
 
-      <div className="w-full relative flex flex-col justify-center">
+      <div className="w-full relative flex flex-col justify-center mb-16">
         <Slider />
       </div>
 

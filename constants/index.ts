@@ -50,6 +50,9 @@ export const events_5 = "/images/events-images/events_5.avif";
 
 // competition photos
 export const competition_1 = "/images/competition-images/competition_1.avif";
+export const competition_2 = "/images/competition-images/competition_2.avif";
+export const competition_3 = "/images/competition-images/competition_3.avif";
+export const competition_4 = "/images/competition-images/competition_4.avif";
 
 // competitions descriptions
 export const items = [

@@ -2,12 +2,7 @@ import {
   exercises_1,
   exercises_2,
   exercises_3,
-  exercises_4,
   exercises_5,
-  hero_2,
-  hero_6,
-  hero_7,
-  hero_8,
 } from "@/constants";
 import Image from "next/image";
 import React from "react";
