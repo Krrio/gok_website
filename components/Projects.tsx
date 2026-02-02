@@ -190,7 +190,7 @@ const Projects = () => {
       });
 
       // ----------------------------
-      // Intro reveal
+      // Intro reveal + PAUZA
       // ----------------------------
       if (introP) {
         tl.to(
@@ -206,10 +206,26 @@ const Projects = () => {
           0.06,
         );
 
+        // ✅ "pauza" – dodatkowy scroll zanim zacznie się fadeout
+        // Im większa duration, tym dłuższa pauza (więcej scrolla).
+        tl.to(
+          {},
+          {
+            duration: 0.15, // <-- to jest Twoje "jedno scrollnięcie" (dostrój 0.4–0.9)
+            ease: "none",
+          },
+          ">", // start zaraz po zakończeniu poprzedniego tweena
+        );
+
+        // Fade out intro dopiero po pauzie
         tl.to(
           introWrapper,
-          { opacity: 0, duration: 0.25, ease: "power1.out" },
-          0.55,
+          {
+            opacity: 0,
+            duration: 0.25,
+            ease: "power1.out",
+          },
+          ">",
         );
       }
 
@@ -388,8 +404,9 @@ const Projects = () => {
                     alt={image.alt}
                     fill
                     className="object-cover"
-                    sizes="(min-width: 768px) 240px, 180px"
-                    priority={index === 0}
+                    sizes="(min-width: 1024px) 1400px, 92vw"
+                    quality={100}
+                    priority={image.isHero || index === 0}
                     draggable={false}
                   />
                 </div>
