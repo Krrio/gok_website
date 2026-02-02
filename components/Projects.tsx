@@ -57,6 +57,9 @@ const Projects = () => {
       );
       const cta = section.querySelector<HTMLElement>("[data-projects-cta]");
 
+      const getTargetW = () => Math.min(section.clientWidth * 0.92, 980);
+      const getTargetH = () => window.innerHeight * 0.56; // 56vh
+
       const getBounds = () => section.getBoundingClientRect();
       const getOffset = (el: Element, axis: "x" | "y") => {
         const bounds = getBounds();
@@ -111,12 +114,20 @@ const Projects = () => {
       };
 
       const setInitialStates = () => {
+        // reset inline size z poprzednich runów (ważne przy refresh)
+        gsap.set(scatter, { clearProps: "width,height" });
+
+        // ustaw startowe rozmiary w px (żeby GSAP mógł tweenować do targetW/targetH)
+        scatter.forEach((el) => {
+          const r = el.getBoundingClientRect();
+          gsap.set(el, { width: r.width, height: r.height, borderRadius: 12 });
+        });
+
         gsap.set(scatter, { opacity: 0, scale: 0.6, x: 0, y: 0 });
 
         if (introWrapper) gsap.set(introWrapper, { opacity: 1 });
         if (introP) gsap.set(introP, { opacity: 1 });
 
-        // CTA może zostać, ale ukryte (jak wcześniej)
         gsap.set(cta, { opacity: 0, y: 16 });
 
         splitIntro();
@@ -128,6 +139,16 @@ const Projects = () => {
           transformOrigin: "0% 50%",
         });
       };
+
+      gsap.set(scatter, {
+        opacity: 0,
+        scale: 1,
+        x: 0,
+        y: 0,
+        width: "auto",
+        height: "auto",
+        borderRadius: 12,
+      });
 
       setInitialStates();
 
@@ -190,14 +211,20 @@ const Projects = () => {
         0,
       );
 
-      // Scatter exit (to jest FINISH)
+      // Scatter morph to slide
+      // Scatter MORPH -> do wymiarów/pozycji "slajdu"
       tl.to(
         scatter,
         {
-          y: (i, el) => getOffset(el, "y") + getScatterExit(),
-          duration: 0.6,
-          stagger: 0.05,
           x: 0,
+          y: 0,
+          scale: 1,
+          width: () => getTargetW(),
+          height: () => getTargetH(),
+          borderRadius: 28,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.06,
           ease: "power2.inOut",
         },
         0.65,
@@ -264,22 +291,26 @@ const Projects = () => {
           </div>
 
           {/* Scatter Images */}
+          {/* Scatter Images */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => (
-              <Image
+              <div
                 key={image.alt}
-                src={image.src}
-                alt={image.alt}
-                width={220}
-                height={150}
                 data-projects-scatter
                 data-x={String(image.x)}
                 data-y={String(image.y)}
-                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl object-cover shadow-[0_12px_30px_rgba(0,0,0,0.35)] ${image.className}`}
-                sizes="(min-width: 768px) 240px, 180px"
-                priority={index === 0}
-                draggable={false}
-              />
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] ${image.className}`}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 240px, 180px"
+                  priority={index === 0}
+                  draggable={false}
+                />
+              </div>
             ))}
           </div>
         </div>
