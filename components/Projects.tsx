@@ -79,12 +79,11 @@ const Projects = () => {
       };
 
       // "karta" (pierwszy etap hero)
-      const getCardW = () => Math.min(section.clientWidth * 0.92, 980);
-      const getCardH = () => window.innerHeight * 0.56; // 56vh
+      const getCardW = () => Math.min(section.clientWidth * 0.7, 680);
+      const getCardH = () => window.innerHeight * 0.42;
 
-      // MAX (duży kadr jak w oryginale)
-      const getHeroW2 = () => Math.min(section.clientWidth * 0.92, 1400);
-      const getHeroH2 = () => window.innerHeight * 0.72;
+      const getHeroW2 = () => Math.min(section.clientWidth * 0.78, 980);
+      const getHeroH2 = () => window.innerHeight * 0.56;
 
       // rest mają zjechać “za dół” — dużo dalej niż tylko 0.28h
       const getRestDropY = () =>
@@ -136,6 +135,8 @@ const Projects = () => {
           clearProps:
             "width,height,opacity,transform,borderRadius,filter,boxShadow",
         });
+
+        gsap.set(scatter, { xPercent: -50, yPercent: -50 });
 
         // start sizes in px
         scatter.forEach((el) => {
@@ -367,7 +368,7 @@ const Projects = () => {
       >
         <div
           ref={sectionRef}
-          className="relative w-full min-h-[70vh] md:min-h-[85vh] rounded-[32px] bg-[#0f0f0f] overflow-hidden px-6 md:px-12 lg:px-16"
+          className="relative w-full min-h-[70vh] md:min-h-[85vh] rounded-[32px] bg-[#12110d] overflow-hidden px-6 md:px-12 lg:px-16"
         >
           {/* Intro Text */}
           <div
@@ -397,7 +398,7 @@ const Projects = () => {
                   data-hero={isHero ? "true" : "false"}
                   data-x={String(image.x)}
                   data-y={String(image.y)}
-                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] ${image.className}`}
+                  className={`absolute left-1/2 top-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] ${image.className}`}
                 >
                   <Image
                     src={image.src}
