@@ -4,29 +4,14 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SplitType from "split-type";
 import { project_1, project_2, project_3 } from "@/constants";
 
 const projectSlides = [
-  {
-    src: project_1,
-    title: "Produkcja",
-    highlight: "przemysłowa",
-  },
-  {
-    src: project_2,
-    title: "Energia",
-    highlight: "i sieci",
-  },
-  {
-    src: project_1,
-    title: "Produkcja",
-    highlight: "przemysłowa",
-  },
-  {
-    src: project_3,
-    title: "Energia",
-    highlight: "i sieci",
-  },
+  { src: project_1, title: "Produkcja", highlight: "przemysłowa" },
+  { src: project_2, title: "Energia", highlight: "i sieci" },
+  { src: project_1, title: "Produkcja", highlight: "przemysłowa" },
+  { src: project_3, title: "Energia", highlight: "i sieci" },
 ];
 
 const scatterImages = [
@@ -59,6 +44,7 @@ const Projects = () => {
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
+
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
@@ -70,9 +56,12 @@ const Projects = () => {
         "[data-projects-scatter]",
         section,
       );
-      const introText = section.querySelector<HTMLElement>(
+      const introP = section.querySelector<HTMLElement>(
         "[data-projects-intro]",
-      );
+      ); // <p>
+      const introWrapper = section.querySelector<HTMLElement>(
+        "[data-projects-intro-wrap]",
+      ); // wrapper for positioning
       const slides = gsap.utils.toArray<HTMLElement>(
         "[data-projects-slide]",
         section,
@@ -92,7 +81,6 @@ const Projects = () => {
         return size * value;
       };
 
-      const getIntroShift = () => section.clientWidth * -0.22;
       const getTitleOffset = () => Math.max(section.clientHeight * 0.22, 120);
       const getScatterExit = () => section.clientHeight * 0.28;
 
@@ -102,15 +90,69 @@ const Projects = () => {
         )
         .filter(Boolean) as HTMLElement[];
 
+      // ----------------------------
+      // SplitType (lines)
+      // ----------------------------
+      let introSplit: SplitType | null = null;
+      let introLines: HTMLElement[] = [];
+      let introLineInners: HTMLElement[] = [];
+
+      const splitIntro = () => {
+        if (!introP) return;
+        if (introSplit) return;
+
+        introSplit = new SplitType(introP, {
+          types: "lines",
+          lineClass: "projects-line",
+        });
+
+        introLines = Array.from(
+          section.querySelectorAll<HTMLElement>(".projects-line"),
+        );
+
+        introLines.forEach((line) => {
+          line.style.display = "block";
+          line.style.overflow = "hidden";
+        });
+
+        introLineInners = introLines.map((line) => {
+          const existingInner = line.querySelector<HTMLElement>(
+            ".projects-line-inner",
+          );
+          if (existingInner) return existingInner;
+
+          const inner = document.createElement("span");
+          inner.className = "projects-line-inner";
+          inner.style.display = "block";
+
+          while (line.firstChild) inner.appendChild(line.firstChild);
+          line.appendChild(inner);
+
+          return inner;
+        });
+      };
+
       const setInitialStates = () => {
         gsap.set(scatter, { opacity: 0, scale: 0.6, x: 0, y: 0 });
-        if (introText) {
-          gsap.set(introText, { opacity: 0, x: 0 });
-        }
+
+        // wrapper must be visible
+        if (introWrapper) gsap.set(introWrapper, { opacity: 1 });
+        if (introP) gsap.set(introP, { opacity: 1 });
+
         gsap.set(slides, { opacity: 0, y: 160, scale: 0.75 });
         gsap.set(titles, { opacity: 0, y: getTitleOffset() });
         gsap.set(dots, { opacity: 0.35, scale: 1 });
         gsap.set(cta, { opacity: 0, y: 16 });
+
+        splitIntro();
+
+        // Start state for reveal (mięsne wejście)
+        gsap.set(introLineInners, {
+          yPercent: 130,
+          opacity: 0,
+          skewY: 9,
+          transformOrigin: "0% 50%",
+        });
       };
 
       setInitialStates();
@@ -128,19 +170,38 @@ const Projects = () => {
         },
       });
 
-      if (introText) {
+      // ----------------------------
+      // Intro reveal (lines)
+      // ----------------------------
+      if (introP) {
         tl.to(
-          introText,
+          introLineInners,
           {
+            yPercent: 0,
             opacity: 1,
-            x: getIntroShift,
-            duration: 0.6,
-            ease: "power2.out",
+            skewY: 0,
+            duration: 0.55,
+            ease: "expo.out",
+            stagger: 0.075,
           },
-          0.1,
+          0.08,
+        );
+
+        // Fade out intro after short moment
+        tl.to(
+          introWrapper,
+          {
+            opacity: 0,
+            duration: 0.25,
+            ease: "power1.out",
+          },
+          0.65,
         );
       }
 
+      // ----------------------------
+      // Scatter in
+      // ----------------------------
       tl.to(
         scatter,
         {
@@ -155,18 +216,7 @@ const Projects = () => {
         0,
       );
 
-      if (introText) {
-        tl.to(
-          introText,
-          {
-            opacity: 0,
-            duration: 0.3,
-            ease: "power1.out",
-          },
-          0.65,
-        );
-      }
-
+      // Scatter exit
       tl.to(
         scatter,
         {
@@ -179,6 +229,7 @@ const Projects = () => {
         0.65,
       );
 
+      // CTA in
       if (cta) {
         tl.to(
           cta,
@@ -192,6 +243,9 @@ const Projects = () => {
         );
       }
 
+      // ----------------------------
+      // Slides loop
+      // ----------------------------
       let cursor = 1.1;
 
       slides.forEach((slide, index) => {
@@ -200,48 +254,21 @@ const Projects = () => {
 
         tl.to(
           slide,
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            ease: "power2.out",
-          },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power2.out" },
           cursor,
         );
 
         if (title) {
           tl.to(
             title,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              ease: "power2.out",
-            },
+            { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
             cursor + 0.1,
           );
         }
 
         if (dot) {
-          tl.to(
-            dots,
-            {
-              opacity: 0.35,
-              scale: 1,
-              duration: 0.1,
-            },
-            cursor,
-          );
-          tl.to(
-            dot,
-            {
-              opacity: 1,
-              scale: 1.7,
-              duration: 0.2,
-            },
-            cursor,
-          );
+          tl.to(dots, { opacity: 0.35, scale: 1, duration: 0.1 }, cursor);
+          tl.to(dot, { opacity: 1, scale: 1.7, duration: 0.2 }, cursor);
         }
 
         cursor += 0.9;
@@ -262,12 +289,7 @@ const Projects = () => {
           if (title) {
             tl.to(
               title,
-              {
-                opacity: 0,
-                y: -40,
-                duration: 0.4,
-                ease: "power2.inOut",
-              },
+              { opacity: 0, y: -40, duration: 0.4, ease: "power2.inOut" },
               cursor,
             );
           }
@@ -275,6 +297,10 @@ const Projects = () => {
           cursor += 0.7;
         }
       });
+
+      return () => {
+        introSplit?.revert();
+      };
     }, sectionRef);
 
     return () => ctx.revert();
@@ -326,12 +352,15 @@ const Projects = () => {
             </button>
           </div>
 
-          {/* Intro Text */}
+          {/* Intro Text (wrapper positions; p is split target) */}
           <div
-            data-projects-intro
-            className="absolute left-1/2 top-1/2 z-20 w-[min(92%,540px)] -translate-x-1/2 -translate-y-1/2 text-left text-white"
+            data-projects-intro-wrap
+            className="absolute left-6 top-1/2 z-20 w-[min(92%,540px)] -translate-y-1/2 text-left text-white md:left-12 lg:left-16"
           >
-            <p className="text-[22px]! leading-snug md:text-[34px]! md:leading-tight">
+            <p
+              data-projects-intro
+              className="text-[22px]! leading-snug md:text-[34px]! md:leading-tight"
+            >
               Pracujemy nad przyspieszeniem zmian we wszystkich źródłach emisji,
               zmieniając pięć sektorów globalnej gospodarki w{" "}
               <span className="text-[#b8f34d]">
