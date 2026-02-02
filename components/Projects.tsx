@@ -28,7 +28,7 @@ const scatterImages = [
     x: 0.32,
     y: -0.18,
     className: "h-24 w-36 md:h-30 md:w-44",
-    isHero: true, // ✅ project_3 = hero
+    isHero: true, // ✅ HERO = project_3
   },
 ];
 
@@ -65,8 +65,11 @@ const Projects = () => {
       const heroBody = section.querySelector<HTMLElement>("[data-hero-body]");
       const heroCta = section.querySelector<HTMLElement>("[data-hero-cta]");
 
-      // --- helpers
+      // ----------------------------
+      // Helpers
+      // ----------------------------
       const getBounds = () => section.getBoundingClientRect();
+
       const getOffset = (el: Element, axis: "x" | "y") => {
         const bounds = getBounds();
         const value = parseFloat((el as HTMLElement).dataset[axis] ?? "0");
@@ -75,13 +78,17 @@ const Projects = () => {
         return size * value;
       };
 
+      // "karta" (pierwszy etap hero)
       const getCardW = () => Math.min(section.clientWidth * 0.92, 980);
       const getCardH = () => window.innerHeight * 0.56; // 56vh
 
+      // MAX (duży kadr jak w oryginale)
       const getHeroW2 = () => Math.min(section.clientWidth * 0.92, 1400);
-      const getHeroH2 = () => window.innerHeight * 0.72; // ~ jak w oryginale
+      const getHeroH2 = () => window.innerHeight * 0.72;
 
-      const getScatterExit = () => section.clientHeight * 0.28;
+      // rest mają zjechać “za dół” — dużo dalej niż tylko 0.28h
+      const getRestDropY = () =>
+        section.clientHeight * 1.25 + window.innerHeight * 0.9;
 
       // ----------------------------
       // SplitType (lines)
@@ -125,19 +132,17 @@ const Projects = () => {
       };
 
       const setInitialStates = () => {
-        // clean inline props after refresh/reverts
         gsap.set(scatter, {
           clearProps:
             "width,height,opacity,transform,borderRadius,filter,boxShadow",
         });
 
-        // set start sizes in px (GSAP can't tween from auto -> number)
+        // start sizes in px
         scatter.forEach((el) => {
           const r = el.getBoundingClientRect();
           gsap.set(el, { width: r.width, height: r.height, borderRadius: 12 });
         });
 
-        // base state
         gsap.set(scatter, {
           opacity: 0,
           scale: 0.6,
@@ -160,13 +165,13 @@ const Projects = () => {
           transformOrigin: "0% 50%",
         });
 
-        // hero UI hidden until hero expands
         gsap.set([heroTitle, heroBody, heroCta], { opacity: 0, y: 24 });
       };
 
       setInitialStates();
 
-      // order rest: bottom first (blue -> red)
+      // rest: kolejność zjazdu = najniższy pierwszy (blue -> red)
+      // zamiast dataset y możesz podmienić na getBoundingClientRect().top jeśli wolisz
       const restByBottomFirst = [...restEls].sort(
         (a, b) => getOffset(b, "y") - getOffset(a, "y"),
       );
@@ -175,7 +180,7 @@ const Projects = () => {
         scrollTrigger: {
           trigger: pin,
           start: "top top",
-          end: () => `+=${window.innerHeight * 2.2}`,
+          end: () => `+=${window.innerHeight * 2.4}`,
           scrub: true,
           pin: pin,
           anticipatePin: 1,
@@ -185,7 +190,7 @@ const Projects = () => {
       });
 
       // ----------------------------
-      // Intro reveal (lines)
+      // Intro reveal
       // ----------------------------
       if (introP) {
         tl.to(
@@ -201,7 +206,6 @@ const Projects = () => {
           0.06,
         );
 
-        // fade intro out before hero UI phase
         tl.to(
           introWrapper,
           { opacity: 0, duration: 0.25, ease: "power1.out" },
@@ -226,8 +230,41 @@ const Projects = () => {
         0,
       );
 
+      /**
+       * KLUCZ do efektu jak w oryginale:
+       * - REST zaczyna "rosnąć + spadać" wcześniej,
+       *   więc pierwszy (najniższy) szybciej znika za dolną krawędź,
+       *   a drugi dopiero potem.
+       * - HERO rusza wolniej i trochę później, żeby nie najeżdżał.
+       */
+
       // ----------------------------
-      // Phase 1: HERO becomes centered card
+      // REST: rosną do MAX i spadają za dół (bez opacity 0)
+      // ----------------------------
+      if (restByBottomFirst.length) {
+        tl.to(
+          restByBottomFirst,
+          {
+            // wracają do osi (żeby finalnie były "na środku" zanim spadną)
+            x: 0,
+            // najważniejsze: lecą za dół
+            y: () => getRestDropY(),
+            // rosną do tej samej MAX wielkości
+            width: () => getHeroW2(),
+            height: () => getHeroH2(),
+            borderRadius: 18,
+            opacity: 1,
+            scale: 1,
+            duration: 1.25, // ✅ wolniej
+            stagger: 0.22, // ✅ wyraźny odstęp: najpierw najniższy, potem kolejny
+            ease: "power2.inOut",
+          },
+          0.62,
+        );
+      }
+
+      // ----------------------------
+      // HERO: wolniejszy morph do karty w centrum (żeby nie najeżdżał)
       // ----------------------------
       if (heroEl) {
         tl.to(
@@ -240,34 +277,15 @@ const Projects = () => {
             height: () => getCardH(),
             borderRadius: 28,
             opacity: 1,
-            duration: 0.85,
+            duration: 1.1, // ✅ wolniej
             ease: "power2.inOut",
           },
-          0.62,
+          0.78, // ✅ start później niż rest
         );
       }
 
       // ----------------------------
-      // Phase 1b: REST falls down & fades out (blue -> red)
-      // ----------------------------
-      if (restByBottomFirst.length) {
-        tl.to(
-          restByBottomFirst,
-          {
-            x: 0,
-            y: () => getScatterExit() + section.clientHeight * 0.35,
-            opacity: 0,
-            scale: 0.98,
-            duration: 0.7,
-            stagger: 0.1, // ✅ wyraźnie: najpierw najniższy
-            ease: "power2.inOut",
-          },
-          0.68,
-        );
-      }
-
-      // ----------------------------
-      // Phase 2: HERO expands to big "slide"
+      // HERO: dopiero potem ekspansja do MAX (jak w oryginale)
       // ----------------------------
       if (heroEl) {
         tl.to(
@@ -276,30 +294,30 @@ const Projects = () => {
             width: () => getHeroW2(),
             height: () => getHeroH2(),
             borderRadius: 18,
-            duration: 0.95,
+            duration: 1.0,
             ease: "power2.inOut",
           },
-          1.35,
+          1.55,
         );
       }
 
       // ----------------------------
-      // Phase 3: Reveal hero UI (title/body/cta) like original
+      // UI reveal (title/body/cta)
       // ----------------------------
       tl.to(
         heroTitle,
         { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.55,
+        1.75,
       );
       tl.to(
         heroBody,
         { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.62,
+        1.82,
       );
       tl.to(
         heroCta,
         { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.7,
+        1.9,
       );
 
       return () => {
@@ -326,7 +344,7 @@ const Projects = () => {
         </p>
       </div>
 
-      {/* PINNED INTERACTIVE SECTION */}
+      {/* PINNED SECTION */}
       <div
         ref={pinRef}
         className="relative w-full min-h-screen flex items-center justify-center"
@@ -379,7 +397,7 @@ const Projects = () => {
             })}
           </div>
 
-          {/* HERO OVERLAY UI (appears after hero expands) */}
+          {/* HERO UI Overlay */}
           <div className="absolute inset-0 z-30 pointer-events-none">
             <div className="absolute left-6 top-10 md:left-12 md:top-12 lg:left-16">
               <div
