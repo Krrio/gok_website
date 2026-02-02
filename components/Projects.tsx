@@ -2,10 +2,12 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
-import { project_1, project_2, project_3 } from "@/constants";
+import AnimatedButtonText from "@/components/AnimatedButtonText";
+import { arrow_icon, project_1, project_2, project_3 } from "@/constants";
 
 /**
  * STAGE 1 (scatter)
@@ -42,26 +44,25 @@ const scatterImages = [
 const projectSlides = [
   {
     src: project_3,
-    titleA: "Lteratura",
+    titleA: "Literatura",
     pill: "30% emisji",
     desc: "Rewolucja przemysłowa zaczyna się od zmiany sposobu wytwarzania — od stali i cementu po produkty codziennego użytku.",
-    cta: "29 firm produkcyjnych",
   },
   {
     src: project_2,
     titleA: "Produkcja",
     pill: "25% emisji",
     desc: "Modernizacja sieci i źródeł energii przyspiesza transformację, poprawiając niezawodność i dostępność.",
-    cta: "17 inicjatyw energetycznych",
   },
   {
     src: project_1,
     titleA: "Muzyka",
     pill: "15% wpływu",
     desc: "Projekty społecznościowe, które wzmacniają lokalne inicjatywy i poprawiają jakość życia mieszkańców.",
-    cta: "12 projektów społecznych",
   },
 ];
+
+const projectsCtaLabel = "Zobacz projekty";
 
 const Projects = () => {
   const pinRef = useRef<HTMLDivElement | null>(null);
@@ -191,8 +192,6 @@ const Projects = () => {
 
         if (pillEl) pillEl.textContent = data.pill;
         if (descEl) descEl.textContent = data.desc;
-
-        if (stage2Btn) stage2Btn.textContent = data.cta;
       };
 
       // ----------------------------
@@ -595,23 +594,30 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Meta bottom-left */}
-            <div
-              data-stage2-meta
-              className="absolute left-6 bottom-24 md:left-12 md:bottom-28 lg:left-16 max-w-[520px]"
-            >
+            {/* Meta inside image */}
+            <div className="absolute inset-0">
               <div
-                data-stage2-pill
-                className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                style={{ width: "min(78%, 980px)", height: "56vh" }}
               >
-                {projectSlides[0].pill}
-              </div>
+                <div
+                  data-stage2-meta
+                  className="absolute left-6 bottom-6 md:left-8 md:bottom-8 max-w-[520px]"
+                >
+                  <div
+                    data-stage2-pill
+                    className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85"
+                  >
+                    {projectSlides[0].pill}
+                  </div>
 
-              <div
-                data-stage2-desc
-                className="mt-3 text-white/80 text-sm md:text-base leading-relaxed"
-              >
-                {projectSlides[0].desc}
+                  <div
+                    data-stage2-desc
+                    className="mt-3 text-white/80 text-sm md:text-base leading-relaxed"
+                  >
+                    {projectSlides[0].desc}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -628,12 +634,20 @@ const Projects = () => {
 
             {/* CTA bottom-center */}
             <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-40">
-              <button
+              <Link
                 data-stage2-cta
-                className="pointer-events-auto rounded-[14px] bg-[#d9ff5b] px-6 py-3 text-sm font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
+                href="/projects"
+                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#d9ff5b] px-6 py-3 text-sm font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
               >
-                {projectSlides[0].cta}
-              </button>
+                <AnimatedButtonText text={projectsCtaLabel} />
+                <Image
+                  src={arrow_icon}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="rotate-45"
+                />
+              </Link>
             </div>
           </div>
         </div>
