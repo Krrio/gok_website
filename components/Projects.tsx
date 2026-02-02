@@ -490,8 +490,8 @@ const Projects = () => {
   return (
     <div className="h-[820vh] w-full p-4 flex flex-col">
       {/* HEADER */}
-      <div className="w-full flex flex-col items-center justify-center space-y-4 md:space-y-8 mb-12 md:mb-16">
-        <h1 className="text-5xl! lg:text-6xl! font-bold! text-center">
+      <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
+        <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
           Projekty
         </h1>
         <p className="md:text-[24px]! text-[20px]! text-gray-600">
@@ -521,11 +521,9 @@ const Projects = () => {
               data-projects-intro
               className="text-[22px]! leading-snug md:text-[34px]! md:leading-tight"
             >
-              Pracujemy nad przyspieszeniem zmian we wszystkich źródłach emisji,
-              zmieniając pięć sektorów globalnej gospodarki w{" "}
-              <span className="text-[#b8f34d]">
-                krajobraz nowych możliwości.
-              </span>
+              Projekty GOK Gorzyce powstają we współpracy z lokalną
+              społecznością i odpowiadają{" "}
+              <span className="text-[#b8f34d]">na jej realne potrzeby.</span>
             </p>
           </div>
 
@@ -560,7 +558,7 @@ const Projects = () => {
           {/* Stage 2 (ref) */}
           <div
             data-stage2
-            className="absolute inset-0 z-30 pointer-events-none"
+            className="absolute inset-0 z-30 pointer-events-none isolate"
           >
             {/* STAGE 2 — GIANT TOP TITLE */}
             <div
@@ -568,7 +566,10 @@ const Projects = () => {
               className="absolute left-1/2 top-6 md:top-8 -translate-x-1/2 z-40 pointer-events-none will-change-transform text-center"
             >
               <div className="text-[clamp(72px,9vw,160px)] font-bold! leading-none!">
-                <span data-stage2-giant-a className="block text-[#d9ff5b]">
+                <span
+                  data-stage2-giant-a
+                  className="block text-[#d9ff5b] mix-blend-screen"
+                >
                   Manufacturing
                 </span>
               </div>
@@ -635,7 +636,7 @@ const Projects = () => {
                 <span
                   key={`dot-${index}`}
                   data-stage2-dot
-                  className="h-2 w-2 rounded-full border border-white/50 bg-white/10"
+                  className="h-1 w-1 rounded-full border border-white/50 bg-white/10"
                 />
               ))}
             </div>
