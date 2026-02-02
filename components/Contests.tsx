@@ -83,7 +83,7 @@ const Contests = () => {
                 </div>
 
                 {/* TEXT */}
-                <h3 className="md:text-[30px] text-[26px]! font-semibold">
+                <h3 className="md:text-[30px] text-[26px] font-semibold">
                   <span
                     className="
       bg-secondary-green
@@ -96,15 +96,14 @@ const Contests = () => {
                   >
                     {(() => {
                       const words = item.title.split(" ");
-
                       if (words.length === 1) {
                         return words[0];
                       }
-
                       return (
                         <>
                           {words[0]}
                           <br className="md:hidden" />
+                          <span className="hidden md:inline"> </span>
                           {words.slice(1).join(" ")}
                         </>
                       );

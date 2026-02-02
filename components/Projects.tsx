@@ -120,6 +120,16 @@ const Projects = () => {
         section,
       );
 
+      const giantTitle = section.querySelector<HTMLElement>(
+        "[data-stage2-giant-title]",
+      );
+      const giantA = section.querySelector<HTMLElement>(
+        "[data-stage2-giant-a]",
+      );
+      const giantB = section.querySelector<HTMLElement>(
+        "[data-stage2-giant-b]",
+      );
+
       // ----------------------------
       // Helpers
       // ----------------------------
@@ -185,6 +195,9 @@ const Projects = () => {
       };
 
       const setInitialStates = () => {
+        gsap.set([giantA, giantB], { opacity: 0, y: 60 });
+        gsap.set(giantTitle, { opacity: 1 }); // wrapper może być widoczny, linie są ukryte
+
         // --- Scatter clear
         gsap.set(scatter, {
           clearProps:
@@ -273,7 +286,7 @@ const Projects = () => {
         // pauza (scroll hold)
         tl.to(
           {},
-          { duration: 0.55, ease: "none" }, // ✅ dłużej = czytelniej
+          { duration: 0.15, ease: "none" }, // ✅ dłużej = czytelniej
           ">",
         );
 
@@ -362,6 +375,21 @@ const Projects = () => {
         stage2Wrap,
         { opacity: 1, duration: 0.35, ease: "power2.out" },
         stage2Start,
+      );
+
+      // ----------------------------
+      // GIANT TOP TITLE (jak w refce)
+      // ----------------------------
+      tl.to(
+        [giantA, giantB],
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          ease: "power3.out",
+          stagger: 0.08,
+        },
+        stage2Start + 0.02,
       );
 
       // title (gigantyczny) — wchodzi lekko z dołu
@@ -462,8 +490,8 @@ const Projects = () => {
   return (
     <div className="h-[820vh] w-full p-4 flex flex-col">
       {/* HEADER */}
-      <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-12 md:mb-16">
-        <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
+      <div className="w-full flex flex-col items-center justify-center space-y-4 md:space-y-8 mb-12 md:mb-16">
+        <h1 className="text-5xl! lg:text-6xl! font-bold! text-center">
           Projekty
         </h1>
         <p className="md:text-[24px]! text-[20px]! text-gray-600">
@@ -534,6 +562,18 @@ const Projects = () => {
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none"
           >
+            {/* STAGE 2 — GIANT TOP TITLE */}
+            <div
+              data-stage2-giant-title
+              className="absolute left-1/2 top-6 md:top-8 -translate-x-1/2 z-40 pointer-events-none will-change-transform text-center"
+            >
+              <div className="text-[clamp(72px,9vw,160px)] font-bold! leading-none!">
+                <span data-stage2-giant-a className="block text-[#d9ff5b]">
+                  Manufacturing
+                </span>
+              </div>
+            </div>
+
             {/* Slides (image) */}
             <div className="absolute inset-0">
               {projectSlides.map((s, idx) => (
