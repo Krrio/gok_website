@@ -7,6 +7,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import { project_1, project_2, project_3 } from "@/constants";
 
+/**
+ * STAGE 1 (scatter)
+ * project_3 = HERO (jak ustaliłeś)
+ */
 const scatterImages = [
   {
     src: project_1,
@@ -28,7 +32,39 @@ const scatterImages = [
     x: 0.32,
     y: -0.18,
     className: "h-24 w-36 md:h-30 md:w-44",
-    isHero: true, // ✅ HERO = project_3
+    isHero: true,
+  },
+] as const;
+
+/**
+ * STAGE 2 (ref style)
+ * duży tytuł + opis + button + dots + przełączanie slajdów
+ * (pierwszy slajd = project_3, żeby „wyjechał” z Twojego hero)
+ */
+const projectSlides = [
+  {
+    src: project_3,
+    titleA: "Produkcja",
+    titleB: "przemysłowa",
+    pill: "30% emisji",
+    desc: "Rewolucja przemysłowa zaczyna się od zmiany sposobu wytwarzania — od stali i cementu po produkty codziennego użytku.",
+    cta: "29 firm produkcyjnych",
+  },
+  {
+    src: project_2,
+    titleA: "Energia",
+    titleB: "i sieci",
+    pill: "25% emisji",
+    desc: "Modernizacja sieci i źródeł energii przyspiesza transformację, poprawiając niezawodność i dostępność.",
+    cta: "17 inicjatyw energetycznych",
+  },
+  {
+    src: project_1,
+    titleA: "Rozwój",
+    titleB: "społeczny",
+    pill: "15% wpływu",
+    desc: "Projekty społecznościowe, które wzmacniają lokalne inicjatywy i poprawiają jakość życia mieszkańców.",
+    cta: "12 projektów społecznych",
   },
 ];
 
@@ -42,15 +78,15 @@ const Projects = () => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const section = sectionRef.current;
-      const pin = pinRef.current;
+      const section = sectionRef.current!;
+      const pin = pinRef.current!;
       if (!section || !pin) return;
 
+      // STAGE 1 nodes
       const scatter = gsap.utils.toArray<HTMLElement>(
         "[data-projects-scatter]",
         section,
       );
-
       const heroEl = section.querySelector<HTMLElement>("[data-hero='true']");
       const restEls = scatter.filter((el) => el !== heroEl);
 
@@ -61,9 +97,28 @@ const Projects = () => {
         "[data-projects-intro-wrap]",
       );
 
-      const heroTitle = section.querySelector<HTMLElement>("[data-hero-title]");
-      const heroBody = section.querySelector<HTMLElement>("[data-hero-body]");
-      const heroCta = section.querySelector<HTMLElement>("[data-hero-cta]");
+      // STAGE 2 nodes
+      const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
+      const stage2Title = section.querySelector<HTMLElement>(
+        "[data-stage2-title]",
+      );
+      const stage2TitleA = section.querySelector<HTMLElement>(
+        "[data-stage2-title-a]",
+      );
+      const stage2TitleB = section.querySelector<HTMLElement>(
+        "[data-stage2-title-b]",
+      );
+      const stage2Meta =
+        section.querySelector<HTMLElement>("[data-stage2-meta]");
+      const stage2Btn = section.querySelector<HTMLElement>("[data-stage2-cta]");
+      const dots = gsap.utils.toArray<HTMLElement>(
+        "[data-stage2-dot]",
+        section,
+      );
+      const slides = gsap.utils.toArray<HTMLElement>(
+        "[data-stage2-slide]",
+        section,
+      );
 
       // ----------------------------
       // Helpers
@@ -78,19 +133,18 @@ const Projects = () => {
         return size * value;
       };
 
-      // "karta" (pierwszy etap hero)
+      // ✅ docelowo mniejszy hero (jak chciałeś)
       const getCardW = () => Math.min(section.clientWidth * 0.7, 680);
       const getCardH = () => window.innerHeight * 0.42;
 
       const getHeroW2 = () => Math.min(section.clientWidth * 0.78, 980);
       const getHeroH2 = () => window.innerHeight * 0.56;
 
-      // rest mają zjechać “za dół” — dużo dalej niż tylko 0.28h
       const getRestDropY = () =>
         section.clientHeight * 1.25 + window.innerHeight * 0.9;
 
       // ----------------------------
-      // SplitType (lines)
+      // SplitType (intro lines)
       // ----------------------------
       let introSplit: SplitType | null = null;
       let introLineInners: HTMLElement[] = [];
@@ -131,14 +185,15 @@ const Projects = () => {
       };
 
       const setInitialStates = () => {
+        // --- Scatter clear
         gsap.set(scatter, {
           clearProps:
             "width,height,opacity,transform,borderRadius,filter,boxShadow",
         });
-
+        // ✅ centrowanie bez skoków
         gsap.set(scatter, { xPercent: -50, yPercent: -50 });
 
-        // start sizes in px
+        // start sizes px (żeby width/height tween działał)
         scatter.forEach((el) => {
           const r = el.getBoundingClientRect();
           gsap.set(el, { width: r.width, height: r.height, borderRadius: 12 });
@@ -154,6 +209,7 @@ const Projects = () => {
 
         if (heroEl) gsap.set(heroEl, { zIndex: 20 });
 
+        // intro
         if (introWrapper) gsap.set(introWrapper, { opacity: 1 });
         if (introP) gsap.set(introP, { opacity: 1 });
 
@@ -166,22 +222,29 @@ const Projects = () => {
           transformOrigin: "0% 50%",
         });
 
-        gsap.set([heroTitle, heroBody, heroCta], { opacity: 0, y: 24 });
+        // stage2 hidden initially
+        gsap.set(stage2Wrap, { opacity: 0, pointerEvents: "none" });
+        gsap.set([stage2Title, stage2Meta, stage2Btn], { opacity: 0, y: 28 });
+        gsap.set([stage2TitleA, stage2TitleB], { opacity: 0, y: 18 });
+
+        gsap.set(dots, { opacity: 0.35, scale: 1 });
+        gsap.set(slides, { opacity: 0, scale: 0.98, y: 18 });
       };
 
       setInitialStates();
 
-      // rest: kolejność zjazdu = najniższy pierwszy (blue -> red)
-      // zamiast dataset y możesz podmienić na getBoundingClientRect().top jeśli wolisz
+      // rest: najniższy pierwszy
       const restByBottomFirst = [...restEls].sort(
         (a, b) => getOffset(b, "y") - getOffset(a, "y"),
       );
 
+      // timeline length: stage1 + stage2 + slides
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: "top top",
-          end: () => `+=${window.innerHeight * 2.4}`,
+          end: () =>
+            `+=${window.innerHeight * (2.6 + projectSlides.length * 1.25)}`,
           scrub: true,
           pin: pin,
           anticipatePin: 1,
@@ -191,7 +254,7 @@ const Projects = () => {
       });
 
       // ----------------------------
-      // Intro reveal + PAUZA
+      // STAGE 1 — intro reveal + pause + fadeout
       // ----------------------------
       if (introP) {
         tl.to(
@@ -207,32 +270,21 @@ const Projects = () => {
           0.06,
         );
 
-        // ✅ "pauza" – dodatkowy scroll zanim zacznie się fadeout
-        // Im większa duration, tym dłuższa pauza (więcej scrolla).
+        // pauza (scroll hold)
         tl.to(
           {},
-          {
-            duration: 0.15, // <-- to jest Twoje "jedno scrollnięcie" (dostrój 0.4–0.9)
-            ease: "none",
-          },
-          ">", // start zaraz po zakończeniu poprzedniego tweena
+          { duration: 0.55, ease: "none" }, // ✅ dłużej = czytelniej
+          ">",
         );
 
-        // Fade out intro dopiero po pauzie
         tl.to(
           introWrapper,
-          {
-            opacity: 0,
-            duration: 0.25,
-            ease: "power1.out",
-          },
+          { opacity: 0, duration: 0.25, ease: "power1.out" },
           ">",
         );
       }
 
-      // ----------------------------
       // Scatter IN (spread)
-      // ----------------------------
       tl.to(
         scatter,
         {
@@ -247,42 +299,27 @@ const Projects = () => {
         0,
       );
 
-      /**
-       * KLUCZ do efektu jak w oryginale:
-       * - REST zaczyna "rosnąć + spadać" wcześniej,
-       *   więc pierwszy (najniższy) szybciej znika za dolną krawędź,
-       *   a drugi dopiero potem.
-       * - HERO rusza wolniej i trochę później, żeby nie najeżdżał.
-       */
-
-      // ----------------------------
       // REST: rosną do MAX i spadają za dół (bez opacity 0)
-      // ----------------------------
       if (restByBottomFirst.length) {
         tl.to(
           restByBottomFirst,
           {
-            // wracają do osi (żeby finalnie były "na środku" zanim spadną)
             x: 0,
-            // najważniejsze: lecą za dół
             y: () => getRestDropY(),
-            // rosną do tej samej MAX wielkości
             width: () => getHeroW2(),
             height: () => getHeroH2(),
             borderRadius: 18,
             opacity: 1,
             scale: 1,
-            duration: 1.25, // ✅ wolniej
-            stagger: 0.22, // ✅ wyraźny odstęp: najpierw najniższy, potem kolejny
+            duration: 1.25,
+            stagger: 0.22,
             ease: "power2.inOut",
           },
           0.62,
         );
       }
 
-      // ----------------------------
-      // HERO: wolniejszy morph do karty w centrum (żeby nie najeżdżał)
-      // ----------------------------
+      // HERO: morph do karty (wolniej, żeby nie najeżdżał)
       if (heroEl) {
         tl.to(
           heroEl,
@@ -294,17 +331,13 @@ const Projects = () => {
             height: () => getCardH(),
             borderRadius: 28,
             opacity: 1,
-            duration: 1.1, // ✅ wolniej
+            duration: 1.1,
             ease: "power2.inOut",
           },
-          0.78, // ✅ start później niż rest
+          0.78,
         );
-      }
 
-      // ----------------------------
-      // HERO: dopiero potem ekspansja do MAX (jak w oryginale)
-      // ----------------------------
-      if (heroEl) {
+        // HERO: expand do MAX
         tl.to(
           heroEl,
           {
@@ -319,23 +352,104 @@ const Projects = () => {
       }
 
       // ----------------------------
-      // UI reveal (title/body/cta)
+      // STAGE 2 — ref style UI + slides
       // ----------------------------
+
+      const stage2Start = 2.25;
+
+      // pokaż stage2 wrapper
       tl.to(
-        heroTitle,
-        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.75,
+        stage2Wrap,
+        { opacity: 1, duration: 0.35, ease: "power2.out" },
+        stage2Start,
+      );
+
+      // title (gigantyczny) — wchodzi lekko z dołu
+      tl.to(
+        [stage2TitleA, stage2TitleB],
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power3.out",
+          stagger: 0.06,
+        },
+        stage2Start + 0.08,
+      );
+
+      // meta + button
+      tl.to(
+        stage2Meta,
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+        stage2Start + 0.25,
       );
       tl.to(
-        heroBody,
-        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.82,
+        stage2Btn,
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+        stage2Start + 0.32,
       );
+
+      // dots
       tl.to(
-        heroCta,
-        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        1.9,
+        dots,
+        { opacity: 0.35, duration: 0.2, ease: "none" },
+        stage2Start + 0.25,
       );
+
+      // hide hero element (żeby stage2 slide 1 przejął)
+      if (heroEl) {
+        tl.to(
+          heroEl,
+          { opacity: 0, duration: 0.2, ease: "none" },
+          stage2Start + 0.05,
+        );
+      }
+
+      // Slides loop (jak w refce)
+      let cursor = stage2Start + 0.05;
+
+      slides.forEach((slide, index) => {
+        const dot = dots[index];
+
+        // slide in
+        tl.to(
+          slide,
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          cursor,
+        );
+
+        // dot active
+        if (dot) {
+          tl.to(dots, { opacity: 0.35, scale: 1, duration: 0.1 }, cursor);
+          tl.to(dot, { opacity: 1, scale: 1.7, duration: 0.2 }, cursor + 0.05);
+        }
+
+        // small hold (scroll distance)
+        tl.to({}, { duration: 0.55, ease: "none" }, cursor + 0.35);
+
+        // slide out (except last)
+        if (index < slides.length - 1) {
+          tl.to(
+            slide,
+            {
+              opacity: 0,
+              scale: 0.985,
+              y: -10,
+              duration: 0.45,
+              ease: "power2.inOut",
+            },
+            cursor + 0.9,
+          );
+        }
+
+        cursor += 1.25;
+      });
 
       return () => {
         introSplit?.revert();
@@ -346,7 +460,7 @@ const Projects = () => {
   }, []);
 
   return (
-    <div className="h-[500vh] w-full p-4 flex flex-col">
+    <div className="h-[820vh] w-full p-4 flex flex-col">
       {/* HEADER */}
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-12 md:mb-16">
         <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
@@ -361,14 +475,14 @@ const Projects = () => {
         </p>
       </div>
 
-      {/* PINNED SECTION */}
+      {/* PINNED */}
       <div
         ref={pinRef}
         className="relative w-full min-h-screen flex items-center justify-center"
       >
         <div
           ref={sectionRef}
-          className="relative w-full min-h-[70vh] md:min-h-[85vh] rounded-[32px] bg-[#12110d] overflow-hidden px-6 md:px-12 lg:px-16"
+          className="relative w-full min-h-[70vh] md:min-h-[85vh] rounded-[32px] bg-[#0f0f0f] overflow-hidden px-6 md:px-12 lg:px-16"
         >
           {/* Intro Text */}
           <div
@@ -387,10 +501,10 @@ const Projects = () => {
             </p>
           </div>
 
-          {/* Scatter Images */}
+          {/* Scatter (Stage 1) */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
-              const isHero = image.isHero;
+              const isHero = (image as any).isHero;
               return (
                 <div
                   key={image.alt}
@@ -407,7 +521,7 @@ const Projects = () => {
                     className="object-cover"
                     sizes="(min-width: 1024px) 1400px, 92vw"
                     quality={100}
-                    priority={image.isHero || index === 0}
+                    priority={isHero || index === 0}
                     draggable={false}
                   />
                 </div>
@@ -415,32 +529,84 @@ const Projects = () => {
             })}
           </div>
 
-          {/* HERO UI Overlay */}
-          <div className="absolute inset-0 z-30 pointer-events-none">
-            <div className="absolute left-6 top-10 md:left-12 md:top-12 lg:left-16">
-              <div
-                data-hero-title
-                className="text-[clamp(56px,7vw,120px)] font-semibold leading-none text-white"
-              >
-                <span className="block">Produkcja</span>
-                <span className="block text-[#d9ff5b]">przemysłowa</span>
-              </div>
+          {/* Stage 2 (ref) */}
+          <div
+            data-stage2
+            className="absolute inset-0 z-30 pointer-events-none"
+          >
+            {/* Slides (image) */}
+            <div className="absolute inset-0">
+              {projectSlides.map((s, idx) => (
+                <div
+                  key={`${s.titleA}-${idx}`}
+                  data-stage2-slide
+                  className="absolute left-1/2 top-1/2 overflow-hidden rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+                  style={{
+                    width: "min(78%, 980px)",
+                    height: "56vh",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <Image
+                    src={s.src}
+                    alt={`${s.titleA} ${s.titleB}`}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 1400px, 92vw"
+                    quality={100}
+                    priority={idx === 0}
+                    draggable={false}
+                  />
+                </div>
+              ))}
+            </div>
 
-              <div
-                data-hero-body
-                className="mt-5 max-w-[560px] text-white/80 text-base md:text-lg leading-relaxed"
-              >
-                Rewolucja przemysłowa zaczyna się od zmiany sposobu wytwarzania
-                — od stali i cementu po produkty codziennego użytku.
+            {/* Giant Title */}
+            <div
+              data-stage2-title
+              className="absolute left-6 top-6 md:left-12 md:top-8 lg:left-16"
+            >
+              <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
+                <span data-stage2-title-a className="block text-[#d9ff5b]">
+                  {projectSlides[0].titleA}
+                </span>
+                <span data-stage2-title-b className="block">
+                  {projectSlides[0].titleB}
+                </span>
               </div>
             </div>
 
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:bottom-10">
+            {/* Meta bottom-left */}
+            <div
+              data-stage2-meta
+              className="absolute left-6 bottom-24 md:left-12 md:bottom-28 lg:left-16 max-w-[520px]"
+            >
+              <div className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85">
+                {projectSlides[0].pill}
+              </div>
+              <div className="mt-3 text-white/80 text-sm md:text-base leading-relaxed">
+                {projectSlides[0].desc}
+              </div>
+            </div>
+
+            {/* Dots right */}
+            <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3">
+              {projectSlides.map((_, index) => (
+                <span
+                  key={`dot-${index}`}
+                  data-stage2-dot
+                  className="h-2 w-2 rounded-full border border-white/50 bg-white/10"
+                />
+              ))}
+            </div>
+
+            {/* CTA bottom-center */}
+            <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-40">
               <button
-                data-hero-cta
-                className="pointer-events-auto rounded-full bg-[#d9ff5b] px-6 py-3 text-sm font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
+                data-stage2-cta
+                className="pointer-events-auto rounded-[14px] bg-[#d9ff5b] px-6 py-3 text-sm font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
               >
-                Zobacz projekty
+                {projectSlides[0].cta}
               </button>
             </div>
           </div>
