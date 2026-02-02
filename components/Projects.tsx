@@ -51,20 +51,20 @@ const projectSlides = [
   {
     src: project_3,
     titleA: "Literatura",
-    pill: "30% emisji",
-    desc: "Rewolucja przemysłowa zaczyna się od zmiany sposobu wytwarzania — od stali i cementu po produkty codziennego użytku.",
+    pill: "Czytelnictwo i spotkania",
+    desc: "Cykl klubów książki, spotkań autorskich i warsztatów pisania, które budują nawyk czytania w każdym wieku.",
   },
   {
     src: project_2,
     titleA: "Produkcja",
-    pill: "25% emisji",
-    desc: "Modernizacja sieci i źródeł energii przyspiesza transformację, poprawiając niezawodność i dostępność.",
+    pill: "Rzemiosło i warsztaty",
+    desc: "Pracownie i krótkie formy: fotografia, ceramika, rękodzieło i media — od pomysłu do gotowego efektu.",
   },
   {
     src: project_1,
     titleA: "Muzyka",
-    pill: "15% wpływu",
-    desc: "Projekty społecznościowe, które wzmacniają lokalne inicjatywy i poprawiają jakość życia mieszkańców.",
+    pill: "Koncerty i edukacja",
+    desc: "Próby otwarte, jam sessions i zajęcia instrumentalne, które łączą lokalne talenty z publicznością.",
   },
 ];
 
