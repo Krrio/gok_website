@@ -70,6 +70,7 @@ const Projects = () => {
 
   // ✅ REFs for dynamic title update
   const titleARef = useRef<HTMLSpanElement | null>(null);
+  const titleAMaskRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
@@ -189,6 +190,8 @@ const Projects = () => {
         if (!data) return;
 
         if (titleARef.current) titleARef.current.textContent = data.titleA;
+        if (titleAMaskRef.current)
+          titleAMaskRef.current.textContent = data.titleA;
 
         if (pillEl) pillEl.textContent = data.pill;
         if (descEl) descEl.textContent = data.desc;
@@ -550,17 +553,23 @@ const Projects = () => {
           <div
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none isolate"
+            style={
+              {
+                "--slide-w": "min(78%, 980px)",
+                "--slide-h": "56vh",
+              } as React.CSSProperties
+            }
           >
             {/* Slides (images) */}
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 z-30">
               {projectSlides.map((s, idx) => (
                 <div
                   key={`${s.titleA}-${idx}`}
                   data-stage2-slide
                   className="absolute left-1/2 top-1/2 overflow-hidden rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
                   style={{
-                    width: "min(78%, 980px)",
-                    height: "56vh",
+                    width: "var(--slide-w)",
+                    height: "var(--slide-h)",
                     transform: "translate(-50%, -50%)",
                   }}
                 >
@@ -581,7 +590,7 @@ const Projects = () => {
             {/* Dynamic Title (CENTER TOP) */}
             <div
               data-stage2-title
-              className="absolute left-1/2 top-10 -translate-x-1/2 text-center w-fit mx-auto"
+              className="absolute left-1/2 top-10 z-20 -translate-x-1/2 text-center w-fit mx-auto"
             >
               <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
                 <span
@@ -594,11 +603,34 @@ const Projects = () => {
               </div>
             </div>
 
+            {/* Masked Title (over slide area) */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 z-[35] pointer-events-none"
+              style={{
+                clipPath:
+                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)))",
+                WebkitClipPath:
+                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)))",
+              }}
+            >
+              <div className="absolute left-1/2 top-10 -translate-x-1/2 text-center w-fit mx-auto">
+                <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
+                  <span
+                    ref={titleAMaskRef}
+                    className="block text-white"
+                  >
+                    {projectSlides[0].titleA}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Meta inside image */}
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 z-40">
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                style={{ width: "min(78%, 980px)", height: "56vh" }}
+                style={{ width: "var(--slide-w)", height: "var(--slide-h)" }}
               >
                 <div
                   data-stage2-meta
