@@ -19,21 +19,27 @@ const scatterImages = [
     alt: "Projekt 1",
     x: 0.315,
     y: 0.18,
-    className: "h-24 w-36 md:h-30 md:w-44",
+    xSm: 0.22,
+    ySm: 0.28,
+    className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
   },
   {
     src: project_2,
     alt: "Projekt 2",
     x: 0.15,
     y: 0,
-    className: "h-24 w-36 md:h-30 md:w-44",
+    xSm: -0.2,
+    ySm: -0.18,
+    className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
   },
   {
     src: project_3,
     alt: "Projekt 3",
     x: 0.32,
     y: -0.18,
-    className: "h-24 w-36 md:h-30 md:w-44",
+    xSm: 0.18,
+    ySm: -0.3,
+    className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
     isHero: true,
   },
 ] as const;
@@ -123,20 +129,30 @@ const Projects = () => {
       // Helpers
       // ----------------------------
       const getBounds = () => section.getBoundingClientRect();
+      const clamp = (min: number, value: number, max: number) =>
+        Math.min(Math.max(value, min), max);
 
       const getOffset = (el: Element, axis: "x" | "y") => {
         const bounds = getBounds();
-        const value = parseFloat((el as HTMLElement).dataset[axis] ?? "0");
+        const useSm = window.matchMedia("(max-width: 639px)").matches;
+        const key = useSm ? `${axis}Sm` : axis;
+        const value = parseFloat(
+          (el as HTMLElement).dataset[key] ??
+            (el as HTMLElement).dataset[axis] ??
+            "0",
+        );
         const size =
           axis === "x" ? (bounds?.width ?? 0) : (bounds?.height ?? 0);
         return size * value;
       };
 
       const getCardW = () => Math.min(section.clientWidth * 0.7, 680);
-      const getCardH = () => window.innerHeight * 0.42;
+      const getCardH = () => clamp(200, window.innerHeight * 0.42, 420);
 
-      const getHeroW2 = () => Math.min(section.clientWidth * 0.78, 980);
-      const getHeroH2 = () => window.innerHeight * 0.56;
+      const getSlideW = () => clamp(280, section.clientWidth * 0.92, 980);
+      const getSlideH = () => clamp(240, window.innerHeight * 0.56, 520);
+      const getHeroW2 = () => getSlideW();
+      const getHeroH2 = () => getSlideH();
 
       const getRestDropY = () =>
         section.clientHeight * 1.25 + window.innerHeight * 0.9;
@@ -482,13 +498,13 @@ const Projects = () => {
   }, []);
 
   return (
-    <div className="h-[820vh] w-full p-4 flex flex-col">
+    <div className="h-[640vh] w-full p-3 sm:p-4 flex flex-col sm:h-[720vh] lg:h-[820vh]">
       {/* HEADER */}
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
-        <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
+        <h1 className="text-4xl! sm:text-5xl! lg:text-6xl! font-semibold text-left">
           Projekty
         </h1>
-        <p className="md:text-[24px]! text-[20px]! text-gray-600">
+        <p className="text-[16px]! sm:text-[18px]! md:text-[24px]! text-gray-600">
           Współtworzone{" "}
           <span className="px-1 bg-gray-300/40 rounded-[5px]">
             przedsięwzięcia
@@ -504,16 +520,16 @@ const Projects = () => {
       >
         <div
           ref={sectionRef}
-          className="relative w-full min-h-[70vh] md:min-h-[85vh] rounded-[32px] bg-[#0f0f0f] overflow-hidden px-6 md:px-12 lg:px-16"
+          className="relative w-full min-h-[72vh] sm:min-h-[80vh] md:min-h-[85vh] rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
           {/* Intro Text */}
           <div
             data-projects-intro-wrap
-            className="absolute left-6 top-1/2 z-20 w-[min(92%,540px)] -translate-y-1/2 text-left text-white md:left-12 lg:left-16"
+            className="absolute left-4 top-1/2 z-20 w-[min(92%,520px)] -translate-y-1/2 text-left text-white sm:left-6 md:left-12 lg:left-16"
           >
             <p
               data-projects-intro
-              className="text-[22px]! leading-snug md:text-[34px]! md:leading-tight"
+              className="text-[18px]! leading-snug sm:text-[20px]! md:text-[34px]! md:leading-tight"
             >
               Projekty GOK Gorzyce powstają we współpracy z lokalną
               społecznością i odpowiadają{" "}
@@ -532,7 +548,9 @@ const Projects = () => {
                   data-hero={isHero ? "true" : "false"}
                   data-x={String(image.x)}
                   data-y={String(image.y)}
-                  className={`absolute left-1/2 top-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] ${image.className}`}
+                  data-x-sm={String((image as any).xSm ?? image.x)}
+                  data-y-sm={String((image as any).ySm ?? image.y)}
+                  className={`absolute left-1/2 top-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] h-20 w-28 sm:h-24 sm:w-36 md:h-30 md:w-44 ${image.className}`}
                 >
                   <Image
                     src={image.src}
@@ -555,8 +573,8 @@ const Projects = () => {
             className="absolute inset-0 z-30 pointer-events-none isolate"
             style={
               {
-                "--slide-w": "min(78%, 980px)",
-                "--slide-h": "56vh",
+                "--slide-w": "clamp(280px, 92%, 980px)",
+                "--slide-h": "clamp(240px, 56vh, 520px)",
               } as React.CSSProperties
             }
           >
@@ -590,9 +608,9 @@ const Projects = () => {
             {/* Dynamic Title (CENTER TOP) */}
             <div
               data-stage2-title
-              className="absolute left-1/2 top-10 z-20 -translate-x-1/2 text-center w-fit mx-auto"
+              className="absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
             >
-              <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
+              <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none text-white sm:text-[clamp(56px,9vw,140px)]">
                 <span
                   ref={titleARef}
                   data-stage2-title-a
@@ -614,12 +632,9 @@ const Projects = () => {
                   "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)))",
               }}
             >
-              <div className="absolute left-1/2 top-10 -translate-x-1/2 text-center w-fit mx-auto">
-                <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
-                  <span
-                    ref={titleAMaskRef}
-                    className="block text-white"
-                  >
+              <div className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10">
+                <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none text-white sm:text-[clamp(56px,9vw,140px)]">
+                  <span ref={titleAMaskRef} className="block text-white">
                     {projectSlides[0].titleA}
                   </span>
                 </div>
@@ -634,18 +649,18 @@ const Projects = () => {
               >
                 <div
                   data-stage2-meta
-                  className="absolute left-6 bottom-6 md:left-8 md:bottom-8 max-w-[520px]"
+                  className="absolute left-4 bottom-4 max-w-[440px] sm:left-6 sm:bottom-6 md:left-8 md:bottom-8 sm:max-w-[520px]"
                 >
                   <div
                     data-stage2-pill
-                    className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85"
+                    className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-[11px] text-white/85 sm:text-xs"
                   >
                     {projectSlides[0].pill}
                   </div>
 
                   <div
                     data-stage2-desc
-                    className="mt-3 text-white/80 text-sm md:text-base leading-relaxed"
+                    className="mt-2 text-white/80 text-[13px] leading-relaxed sm:mt-3 sm:text-sm md:text-base"
                   >
                     {projectSlides[0].desc}
                   </div>
@@ -654,7 +669,7 @@ const Projects = () => {
             </div>
 
             {/* Dots right */}
-            <div className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 sm:right-4 md:right-6">
               {projectSlides.map((_, index) => (
                 <span
                   key={`dot-${index}`}
@@ -665,11 +680,11 @@ const Projects = () => {
             </div>
 
             {/* CTA bottom-center */}
-            <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-40">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 sm:bottom-6 md:bottom-8">
               <Link
                 data-stage2-cta
                 href="/projects"
-                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#d9ff5b] px-6 py-3 text-sm font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
+                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#d9ff5b] px-5 py-2.5 text-xs font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)] sm:px-6 sm:py-3 sm:text-sm"
               >
                 <AnimatedButtonText text={projectsCtaLabel} />
                 <Image
