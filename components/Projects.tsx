@@ -37,31 +37,26 @@ const scatterImages = [
 ] as const;
 
 /**
- * STAGE 2 (ref style)
- * duży tytuł + opis + button + dots + przełączanie slajdów
- * (pierwszy slajd = project_3, żeby „wyjechał” z Twojego hero)
+ * STAGE 2
  */
 const projectSlides = [
   {
     src: project_3,
-    titleA: "Produkcja",
-    titleB: "przemysłowa",
+    titleA: "Lteratura",
     pill: "30% emisji",
     desc: "Rewolucja przemysłowa zaczyna się od zmiany sposobu wytwarzania — od stali i cementu po produkty codziennego użytku.",
     cta: "29 firm produkcyjnych",
   },
   {
     src: project_2,
-    titleA: "Energia",
-    titleB: "i sieci",
+    titleA: "Produkcja",
     pill: "25% emisji",
     desc: "Modernizacja sieci i źródeł energii przyspiesza transformację, poprawiając niezawodność i dostępność.",
     cta: "17 inicjatyw energetycznych",
   },
   {
     src: project_1,
-    titleA: "Rozwój",
-    titleB: "społeczny",
+    titleA: "Muzyka",
     pill: "15% wpływu",
     desc: "Projekty społecznościowe, które wzmacniają lokalne inicjatywy i poprawiają jakość życia mieszkańców.",
     cta: "12 projektów społecznych",
@@ -71,6 +66,9 @@ const projectSlides = [
 const Projects = () => {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  // ✅ REFs for dynamic title update
+  const titleARef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
@@ -82,7 +80,9 @@ const Projects = () => {
       const pin = pinRef.current!;
       if (!section || !pin) return;
 
-      // STAGE 1 nodes
+      // ----------------------------
+      // Nodes
+      // ----------------------------
       const scatter = gsap.utils.toArray<HTMLElement>(
         "[data-projects-scatter]",
         section,
@@ -97,20 +97,14 @@ const Projects = () => {
         "[data-projects-intro-wrap]",
       );
 
-      // STAGE 2 nodes
       const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
       const stage2Title = section.querySelector<HTMLElement>(
         "[data-stage2-title]",
       );
-      const stage2TitleA = section.querySelector<HTMLElement>(
-        "[data-stage2-title-a]",
-      );
-      const stage2TitleB = section.querySelector<HTMLElement>(
-        "[data-stage2-title-b]",
-      );
       const stage2Meta =
         section.querySelector<HTMLElement>("[data-stage2-meta]");
       const stage2Btn = section.querySelector<HTMLElement>("[data-stage2-cta]");
+
       const dots = gsap.utils.toArray<HTMLElement>(
         "[data-stage2-dot]",
         section,
@@ -120,15 +114,8 @@ const Projects = () => {
         section,
       );
 
-      const giantTitle = section.querySelector<HTMLElement>(
-        "[data-stage2-giant-title]",
-      );
-      const giantA = section.querySelector<HTMLElement>(
-        "[data-stage2-giant-a]",
-      );
-      const giantB = section.querySelector<HTMLElement>(
-        "[data-stage2-giant-b]",
-      );
+      const pillEl = section.querySelector<HTMLElement>("[data-stage2-pill]");
+      const descEl = section.querySelector<HTMLElement>("[data-stage2-desc]");
 
       // ----------------------------
       // Helpers
@@ -143,7 +130,6 @@ const Projects = () => {
         return size * value;
       };
 
-      // ✅ docelowo mniejszy hero (jak chciałeś)
       const getCardW = () => Math.min(section.clientWidth * 0.7, 680);
       const getCardH = () => window.innerHeight * 0.42;
 
@@ -194,19 +180,32 @@ const Projects = () => {
         });
       };
 
-      const setInitialStates = () => {
-        gsap.set([giantA, giantB], { opacity: 0, y: 60 });
-        gsap.set(giantTitle, { opacity: 1 }); // wrapper może być widoczny, linie są ukryte
+      // ----------------------------
+      // Dynamic Stage2 text
+      // ----------------------------
+      const setSlideText = (i: number) => {
+        const data = projectSlides[i];
+        if (!data) return;
 
-        // --- Scatter clear
+        if (titleARef.current) titleARef.current.textContent = data.titleA;
+
+        if (pillEl) pillEl.textContent = data.pill;
+        if (descEl) descEl.textContent = data.desc;
+
+        if (stage2Btn) stage2Btn.textContent = data.cta;
+      };
+
+      // ----------------------------
+      // Initial states
+      // ----------------------------
+      const setInitialStates = () => {
         gsap.set(scatter, {
           clearProps:
             "width,height,opacity,transform,borderRadius,filter,boxShadow",
         });
-        // ✅ centrowanie bez skoków
+
         gsap.set(scatter, { xPercent: -50, yPercent: -50 });
 
-        // start sizes px (żeby width/height tween działał)
         scatter.forEach((el) => {
           const r = el.getBoundingClientRect();
           gsap.set(el, { width: r.width, height: r.height, borderRadius: 12 });
@@ -222,7 +221,6 @@ const Projects = () => {
 
         if (heroEl) gsap.set(heroEl, { zIndex: 20 });
 
-        // intro
         if (introWrapper) gsap.set(introWrapper, { opacity: 1 });
         if (introP) gsap.set(introP, { opacity: 1 });
 
@@ -235,23 +233,57 @@ const Projects = () => {
           transformOrigin: "0% 50%",
         });
 
-        // stage2 hidden initially
         gsap.set(stage2Wrap, { opacity: 0, pointerEvents: "none" });
         gsap.set([stage2Title, stage2Meta, stage2Btn], { opacity: 0, y: 28 });
-        gsap.set([stage2TitleA, stage2TitleB], { opacity: 0, y: 18 });
 
         gsap.set(dots, { opacity: 0.35, scale: 1 });
         gsap.set(slides, { opacity: 0, scale: 0.98, y: 18 });
+
+        // initial content
+        setSlideText(0);
       };
 
       setInitialStates();
 
-      // rest: najniższy pierwszy
       const restByBottomFirst = [...restEls].sort(
         (a, b) => getOffset(b, "y") - getOffset(a, "y"),
       );
 
-      // timeline length: stage1 + stage2 + slides
+      // ----------------------------
+      // Timeline
+      // ----------------------------
+      const stage2Start = 2.25;
+
+      // slide slot = dokładnie tyle, ile zwiększasz cursor (1.25)
+      const slideSlot = 1.25;
+      const stage2Base = stage2Start + 0.05;
+
+      let activeIndex = -1;
+
+      // ⚡ Deterministyczna synchronizacja tekstu z czasem TL (działa w dół i w górę)
+      const syncTextWithTime = (tl: gsap.core.Timeline) => {
+        const t = tl.time();
+
+        // zanim stage2 wystartuje — trzymaj 0
+        if (t < stage2Base) {
+          if (activeIndex !== 0) {
+            activeIndex = 0;
+            setSlideText(0);
+          }
+          return;
+        }
+
+        const idx = Math.min(
+          projectSlides.length - 1,
+          Math.floor((t - stage2Base) / slideSlot),
+        );
+
+        if (idx !== activeIndex) {
+          activeIndex = idx;
+          setSlideText(idx);
+        }
+      };
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
@@ -262,12 +294,18 @@ const Projects = () => {
           pin: pin,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onRefreshInit: setInitialStates,
+          onRefreshInit: () => {
+            setInitialStates();
+            activeIndex = -1;
+          },
+          onUpdate: () => {
+            syncTextWithTime(tl);
+          },
         },
       });
 
       // ----------------------------
-      // STAGE 1 — intro reveal + pause + fadeout
+      // STAGE 1
       // ----------------------------
       if (introP) {
         tl.to(
@@ -283,13 +321,7 @@ const Projects = () => {
           0.06,
         );
 
-        // pauza (scroll hold)
-        tl.to(
-          {},
-          { duration: 0.15, ease: "none" }, // ✅ dłużej = czytelniej
-          ">",
-        );
-
+        tl.to({}, { duration: 0.15, ease: "none" }, ">");
         tl.to(
           introWrapper,
           { opacity: 0, duration: 0.25, ease: "power1.out" },
@@ -297,7 +329,6 @@ const Projects = () => {
         );
       }
 
-      // Scatter IN (spread)
       tl.to(
         scatter,
         {
@@ -312,7 +343,6 @@ const Projects = () => {
         0,
       );
 
-      // REST: rosną do MAX i spadają za dół (bez opacity 0)
       if (restByBottomFirst.length) {
         tl.to(
           restByBottomFirst,
@@ -332,7 +362,6 @@ const Projects = () => {
         );
       }
 
-      // HERO: morph do karty (wolniej, żeby nie najeżdżał)
       if (heroEl) {
         tl.to(
           heroEl,
@@ -350,7 +379,6 @@ const Projects = () => {
           0.78,
         );
 
-        // HERO: expand do MAX
         tl.to(
           heroEl,
           {
@@ -365,66 +393,34 @@ const Projects = () => {
       }
 
       // ----------------------------
-      // STAGE 2 — ref style UI + slides
+      // STAGE 2
       // ----------------------------
-
-      const stage2Start = 2.25;
-
-      // pokaż stage2 wrapper
       tl.to(
         stage2Wrap,
         { opacity: 1, duration: 0.35, ease: "power2.out" },
         stage2Start,
       );
 
-      // ----------------------------
-      // GIANT TOP TITLE (jak w refce)
-      // ----------------------------
       tl.to(
-        [giantA, giantB],
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.65,
-          ease: "power3.out",
-          stagger: 0.08,
-        },
-        stage2Start + 0.02,
-      );
-
-      // title (gigantyczny) — wchodzi lekko z dołu
-      tl.to(
-        [stage2TitleA, stage2TitleB],
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power3.out",
-          stagger: 0.06,
-        },
+        stage2Title,
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
         stage2Start + 0.08,
       );
 
-      // meta + button
       tl.to(
         stage2Meta,
         { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
         stage2Start + 0.25,
       );
+
       tl.to(
         stage2Btn,
         { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
         stage2Start + 0.32,
       );
 
-      // dots
-      tl.to(
-        dots,
-        { opacity: 0.35, duration: 0.2, ease: "none" },
-        stage2Start + 0.25,
-      );
+      tl.to(dots, { opacity: 0.35, duration: 0.2, ease: "none" }, stage2Start);
 
-      // hide hero element (żeby stage2 slide 1 przejął)
       if (heroEl) {
         tl.to(
           heroEl,
@@ -433,13 +429,12 @@ const Projects = () => {
         );
       }
 
-      // Slides loop (jak w refce)
+      // Slides loop (bez tl.call)
       let cursor = stage2Start + 0.05;
 
       slides.forEach((slide, index) => {
         const dot = dots[index];
 
-        // slide in
         tl.to(
           slide,
           {
@@ -452,16 +447,13 @@ const Projects = () => {
           cursor,
         );
 
-        // dot active
         if (dot) {
           tl.to(dots, { opacity: 0.35, scale: 1, duration: 0.1 }, cursor);
           tl.to(dot, { opacity: 1, scale: 1.7, duration: 0.2 }, cursor + 0.05);
         }
 
-        // small hold (scroll distance)
         tl.to({}, { duration: 0.55, ease: "none" }, cursor + 0.35);
 
-        // slide out (except last)
         if (index < slides.length - 1) {
           tl.to(
             slide,
@@ -555,27 +547,12 @@ const Projects = () => {
             })}
           </div>
 
-          {/* Stage 2 (ref) */}
+          {/* Stage 2 */}
           <div
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none isolate"
           >
-            {/* STAGE 2 — GIANT TOP TITLE */}
-            <div
-              data-stage2-giant-title
-              className="absolute left-1/2 top-6 md:top-8 -translate-x-1/2 z-40 pointer-events-none will-change-transform text-center"
-            >
-              <div className="text-[clamp(72px,9vw,160px)] font-bold! leading-none!">
-                <span
-                  data-stage2-giant-a
-                  className="block text-[#d9ff5b] mix-blend-screen"
-                >
-                  Manufacturing
-                </span>
-              </div>
-            </div>
-
-            {/* Slides (image) */}
+            {/* Slides (images) */}
             <div className="absolute inset-0">
               {projectSlides.map((s, idx) => (
                 <div
@@ -590,7 +567,7 @@ const Projects = () => {
                 >
                   <Image
                     src={s.src}
-                    alt={`${s.titleA} ${s.titleB}`}
+                    alt={`${s.titleA}`}
                     fill
                     className="object-cover"
                     sizes="(min-width: 1024px) 1400px, 92vw"
@@ -602,17 +579,18 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* Giant Title */}
+            {/* Dynamic Title (CENTER TOP) */}
             <div
               data-stage2-title
-              className="absolute left-6 top-6 md:left-12 md:top-8 lg:left-16"
+              className="absolute left-1/2 top-10 -translate-x-1/2 text-center w-fit mx-auto"
             >
               <div className="text-[clamp(64px,7.6vw,140px)] font-semibold leading-none text-white">
-                <span data-stage2-title-a className="block text-[#d9ff5b]">
+                <span
+                  ref={titleARef}
+                  data-stage2-title-a
+                  className="block text-[#d9ff5b]"
+                >
                   {projectSlides[0].titleA}
-                </span>
-                <span data-stage2-title-b className="block">
-                  {projectSlides[0].titleB}
                 </span>
               </div>
             </div>
@@ -622,10 +600,17 @@ const Projects = () => {
               data-stage2-meta
               className="absolute left-6 bottom-24 md:left-12 md:bottom-28 lg:left-16 max-w-[520px]"
             >
-              <div className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85">
+              <div
+                data-stage2-pill
+                className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-xs text-white/85"
+              >
                 {projectSlides[0].pill}
               </div>
-              <div className="mt-3 text-white/80 text-sm md:text-base leading-relaxed">
+
+              <div
+                data-stage2-desc
+                className="mt-3 text-white/80 text-sm md:text-base leading-relaxed"
+              >
                 {projectSlides[0].desc}
               </div>
             </div>
