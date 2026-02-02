@@ -86,4 +86,5 @@ export const items = [
 
 // line
 export const curved_line_7 = "/svg/line-7.svg";
+export const curved_line_8 = "/svg/line-8.svg";
 export const star = "/svg/star.svg";

@@ -1,4 +1,4 @@
-import { curved_line_7, items, star } from "@/constants";
+import { curved_line_7, curved_line_8, items, star } from "@/constants";
 import Image from "next/image";
 import React from "react";
 import Slider from "./Slider";
@@ -26,7 +26,7 @@ const Contests = () => {
       <div className="w-full relative flex flex-col justify-center gap-17.5">
         {/* CURVED LINE */}
         <div
-          className="pointer-events-none absolute inset-0 z-100
+          className="hidden md:flex pointer-events-none absolute inset-0 z-100
           -translate-x-6 -translate-y-4
           md:-translate-x-24 md:-translate-y-6
           lg:-translate-x-32 lg:-translate-y-8.5
@@ -35,6 +35,18 @@ const Contests = () => {
           <Image
             src={curved_line_7}
             alt=""
+            fill
+            className="object-contain scale-75"
+            priority
+          />
+        </div>
+        <div
+          className="flex md:hidden pointer-events-none absolute inset-0 z-100
+          -translate-x-34.5 -translate-y-17 scale-105"
+        >
+          <Image
+            src={curved_line_8}
+            alt="line"
             fill
             className="object-contain scale-75"
             priority
@@ -52,15 +64,15 @@ const Contests = () => {
               ].join(" ")}
             >
               {/* YEAR */}
-              <div className="w-fit flex flex-col items-start justify-start py-6">
+              <div className="w-fit flex-col items-start justify-start py-6 hidden md:flex">
                 <p className="text-[42px]! whitespace-nowrap">{item.year}</p>
                 <p className="text-[28px]!">{item.description}</p>
               </div>
 
               {/* GREEN CARD */}
-              <div className="w-150 h-full bg-primary-green rounded-[45px] relative py-10 pl-34.5 flex flex-col items-start justify-start gap-5">
+              <div className="w-150 h-full bg-primary-green rounded-[45px] relative md:py-10 py-8 md:pl-34.5 pl-28 flex flex-col items-start justify-start md:gap-5 gap-4">
                 {/* STAR */}
-                <div className="absolute top-12 left-12">
+                <div className="absolute md:top-12 top-9 left-12">
                   <Image
                     src={star}
                     alt="star"
@@ -71,11 +83,36 @@ const Contests = () => {
                 </div>
 
                 {/* TEXT */}
-                <h3 className="text-[30px]! font-semibold bg-secondary-green rounded-[7px] px-1">
-                  {item.title}
+                <h3 className="md:text-[30px] text-[26px]! font-semibold">
+                  <span
+                    className="
+      bg-secondary-green
+      px-2
+      rounded-[7px]
+      inline
+      [box-decoration-break:clone]
+      [-webkit-box-decoration-break:clone]
+    "
+                  >
+                    {(() => {
+                      const words = item.title.split(" ");
+
+                      if (words.length === 1) {
+                        return words[0];
+                      }
+
+                      return (
+                        <>
+                          {words[0]}
+                          <br className="md:hidden" />
+                          {words.slice(1).join(" ")}
+                        </>
+                      );
+                    })()}
+                  </span>
                 </h3>
 
-                <p className="text-[18px]! leading-6! max-w-130 pr-40 ">
+                <p className="text-[18px]! leading-6! max-w-130 md:pr-40">
                   {item.content}
                 </p>
               </div>

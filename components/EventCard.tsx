@@ -1,3 +1,5 @@
+"use client";
+
 import { arrow_icon } from "@/constants";
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import Image from "next/image";
@@ -9,6 +11,7 @@ type EventCardProps = {
   photo: string;
   href: string;
   direction: "left" | "right";
+  date: string;
 };
 
 const EventCard = ({
@@ -17,9 +20,11 @@ const EventCard = ({
   photo,
   href,
   direction,
+  date,
 }: EventCardProps) => {
   return (
     <article
+      data-events-animate
       className={`w-full h-80 flex flex-col md:flex-row relative items-stretch rounded-3xl overflow-hidden gap-0 md:gap-4 ${
         direction === "right" ? "md:flex-row-reverse" : ""
       }`}
@@ -55,11 +60,19 @@ const EventCard = ({
             />
           </Link>
         </div>
-        <div className="bg-[#e9e9e9] h-full rounded-lg p-4">
+        <div className="bg-[#e9e9e9] h-full flex-col flex rounded-lg p-4 justify-between">
           <p className="text-gray-600 leading-relaxed text-sm! md:text-xl!">
             {description}
           </p>
+          <p className="text-gray-600 leading-relaxed text-sm! md:text-xl! bg-primary-green px-1 w-fit rounded-[7px]">
+            {date}
+          </p>
         </div>
+        {/* <div className="bg-[#e9e9e9] h-full rounded-lg p-4">
+          <p className="text-gray-600 leading-relaxed text-sm! md:text-xl!">
+            {date}
+          </p>
+        </div> */}
       </div>
     </article>
   );
