@@ -11,6 +11,7 @@ import {
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
 
 const SLIDE_DURATION = 5000;
 
@@ -103,8 +104,8 @@ const Slider = () => {
               </div>
 
               <div className="absolute top-6 right-6 md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300">
-                <button
-                  type="button"
+                <Link
+                  href="/"
                   className="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/90 text-sm font-medium text-gray-900 shadow-lg backdrop-blur"
                   aria-label="Konkursy"
                 >
@@ -116,7 +117,7 @@ const Slider = () => {
                     height={16}
                     className="rotate-45"
                   />
-                </button>
+                </Link>
               </div>
             </article>
           ))}
