@@ -501,7 +501,7 @@ const Projects = () => {
     <div className="h-[640vh] w-full p-3 sm:p-4 flex flex-col sm:h-[720vh] lg:h-[820vh]">
       {/* HEADER */}
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
-        <h1 className="text-4xl! sm:text-5xl! lg:text-6xl! font-semibold text-left">
+        <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
           Projekty
         </h1>
         <p className="text-[16px]! sm:text-[18px]! md:text-[24px]! text-gray-600">
@@ -514,13 +514,25 @@ const Projects = () => {
       </div>
 
       {/* PINNED */}
+      {/* PINNED */}
       <div
         ref={pinRef}
-        className="relative w-full min-h-screen flex items-center justify-center"
+        className="relative w-full flex flex-col items-center 
+        justify-start           /* Mobile: od góry */
+        md:justify-center       /* Laptop/Desktop: środek (ładne pinowanie) */
+        md:min-h-screen         /* Laptop/Desktop: pełna wysokość dla efektu */
+        2xl:justify-start       /* 2XL: Wracamy do góry, żeby uniknąć dziury */
+        2xl:pt-12               /* 2XL: Lekki odstęp, żeby nie przykleiło się za mocno */
+        "
       >
         <div
           ref={sectionRef}
-          className="relative w-full min-h-[72vh] sm:min-h-[80vh] md:min-h-[85vh] rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
+          className="relative w-full 
+            min-h-[72vh] 
+            sm:min-h-[80vh] 
+            md:min-h-[85vh] 
+            2xl:min-h-[50vh] 2xl:max-h-[550px]
+            rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
           {/* Intro Text */}
           <div

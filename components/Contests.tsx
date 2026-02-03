@@ -41,14 +41,14 @@ const Contests = () => {
           />
         </div>
         <div
-          className="flex md:hidden pointer-events-none absolute inset-0 z-100
-          -translate-x-34.5 -translate-y-17 scale-105"
+          className="flex md:hidden pointer-events-none absolute inset-y-0 z-100
+          left-16.5 -translate-x-1/2 w-25 my-40 -top-30"
         >
           <Image
             src={curved_line_8}
             alt="line"
             fill
-            className="object-contain scale-75"
+            className="object-contain"
             priority
           />
         </div>
@@ -111,7 +111,7 @@ const Contests = () => {
                   </span>
                 </h3>
 
-                <p className="text-[18px]! leading-6! max-w-130 md:pr-40">
+                <p className="text-[16px]! leading-6! max-w-130 md:pr-40 pr-10">
                   {item.content}
                 </p>
               </div>

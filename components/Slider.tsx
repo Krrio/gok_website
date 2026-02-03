@@ -5,8 +5,6 @@ import {
   competition_2,
   competition_3,
   competition_4,
-  events_2,
-  events_3,
 } from "@/constants";
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import Image from "next/image";
@@ -98,7 +96,7 @@ const Slider = () => {
                 <h3 className="text-3xl! md:text-4xl! font-semibold bg-primary-green p-1 rounded-[7px] w-fit">
                   {slide.title}
                 </h3>
-                <p className="mt-2 text-base md:text-lg text-white/90 max-w-xl">
+                <p className="mt-2 text-[24px]! md:text-4xl! text-white/90 max-w-xl">
                   {slide.description}
                 </p>
               </div>
