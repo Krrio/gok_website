@@ -11,7 +11,6 @@ import { arrow_icon, project_1, project_2, project_3 } from "@/constants";
 
 /**
  * STAGE 1 (scatter)
- * project_3 = HERO (jak ustaliłeś)
  */
 const scatterImages = [
   {
@@ -58,7 +57,7 @@ const projectSlides = [
     src: project_2,
     titleA: "Produkcja",
     pill: "Rzemiosło i warsztaty",
-    desc: "Pracownie i krótkie formy: fotografia, ceramika, rękodzieło i media — od pomysłu do gotowego efektu.",
+    desc: "Pracownie i krótkie formy: fotografia, ceramika, rękodzieło i media - od pomysłu do gotowego efektu.",
   },
   {
     src: project_1,
@@ -106,9 +105,16 @@ const Projects = () => {
       );
 
       const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
+
+      // ZMIANA: Pobieramy oba kontenery tytułów (zielony i maskowany)
       const stage2Title = section.querySelector<HTMLElement>(
         "[data-stage2-title]",
       );
+      const stage2TitleMasked = section.querySelector<HTMLElement>(
+        "[data-stage2-title-masked]",
+      );
+      const titleWrappers = [stage2Title, stage2TitleMasked].filter(Boolean);
+
       const stage2Meta =
         section.querySelector<HTMLElement>("[data-stage2-meta]");
       const stage2Btn = section.querySelector<HTMLElement>("[data-stage2-cta]");
@@ -252,10 +258,25 @@ const Projects = () => {
         });
 
         gsap.set(stage2Wrap, { opacity: 0, pointerEvents: "none" });
-        gsap.set([stage2Title, stage2Meta, stage2Btn], { opacity: 0, y: 28 });
+
+        // ZMIANA: Obliczamy środek karty, aby ustawić pozycję startową tytułu
+        const cardHeight = section.clientHeight;
+        // Tytuł w CSS jest na górze. Przesuwamy go w dół o ~40% wysokości karty, żeby zaczął na środku.
+        const titleStartY = cardHeight * 0.4;
+
+        // Ustawiamy oba tytuły (zielony i maskowany) na pozycji startowej (środek)
+        gsap.set(titleWrappers, { opacity: 0, y: titleStartY });
+
+        gsap.set([stage2Meta, stage2Btn], { opacity: 0, y: 28 });
 
         gsap.set(dots, { opacity: 0.35, scale: 1 });
-        gsap.set(slides, { opacity: 0, scale: 0.98, y: 18 });
+
+        gsap.set(slides, { opacity: 0, scale: 1, y: 18 });
+
+        slides.forEach((slide) => {
+          const img = slide.querySelector("img");
+          if (img) gsap.set(img, { scale: 1.0 });
+        });
 
         // initial content
         setSlideText(0);
@@ -271,18 +292,13 @@ const Projects = () => {
       // Timeline
       // ----------------------------
       const stage2Start = 2.25;
-
-      // slide slot = dokładnie tyle, ile zwiększasz cursor (1.25)
       const slideSlot = 1.25;
       const stage2Base = stage2Start + 0.05;
 
       let activeIndex = -1;
 
-      // ⚡ Deterministyczna synchronizacja tekstu z czasem TL (działa w dół i w górę)
       const syncTextWithTime = (tl: gsap.core.Timeline) => {
         const t = tl.time();
-
-        // zanim stage2 wystartuje — trzymaj 0
         if (t < stage2Base) {
           if (activeIndex !== 0) {
             activeIndex = 0;
@@ -290,12 +306,10 @@ const Projects = () => {
           }
           return;
         }
-
         const idx = Math.min(
           projectSlides.length - 1,
           Math.floor((t - stage2Base) / slideSlot),
         );
-
         if (idx !== activeIndex) {
           activeIndex = idx;
           setSlideText(idx);
@@ -322,9 +336,7 @@ const Projects = () => {
         },
       });
 
-      // ----------------------------
-      // STAGE 1
-      // ----------------------------
+      // STAGE 1 (bez zmian)
       if (introP) {
         tl.to(
           introLineInners,
@@ -338,7 +350,6 @@ const Projects = () => {
           },
           0.06,
         );
-
         tl.to({}, { duration: 0.15, ease: "none" }, ">");
         tl.to(
           introWrapper,
@@ -346,7 +357,6 @@ const Projects = () => {
           ">",
         );
       }
-
       tl.to(
         scatter,
         {
@@ -360,7 +370,6 @@ const Projects = () => {
         },
         0,
       );
-
       if (restByBottomFirst.length) {
         tl.to(
           restByBottomFirst,
@@ -379,7 +388,6 @@ const Projects = () => {
           0.62,
         );
       }
-
       if (heroEl) {
         tl.to(
           heroEl,
@@ -396,7 +404,6 @@ const Projects = () => {
           },
           0.78,
         );
-
         tl.to(
           heroEl,
           {
@@ -419,10 +426,11 @@ const Projects = () => {
         stage2Start,
       );
 
+      // ZMIANA: Animujemy OBA tytuły (zielony i maskowany) ze środka do góry (y: 0)
       tl.to(
-        stage2Title,
-        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-        stage2Start + 0.08,
+        titleWrappers,
+        { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, // Dłuższy czas dla ładniejszego efektu
+        stage2Start, // Startujemy razem z pojawieniem się kontenera
       );
 
       tl.to(
@@ -447,23 +455,33 @@ const Projects = () => {
         );
       }
 
-      // Slides loop (bez tl.call)
       let cursor = stage2Start + 0.05;
 
       slides.forEach((slide, index) => {
         const dot = dots[index];
+        const img = slide.querySelector("img");
 
+        // WEJŚCIE
         tl.to(
           slide,
           {
             opacity: 1,
-            scale: 1,
             y: 0,
             duration: 0.55,
             ease: "power2.out",
           },
           cursor,
         );
+
+        // EFEKT ZOOM (na samym zdjęciu)
+        if (img) {
+          tl.fromTo(
+            img,
+            { scale: 1.1 },
+            { scale: 1.0, duration: 0.8, ease: "power2.out" },
+            cursor,
+          );
+        }
 
         if (dot) {
           tl.to(dots, { opacity: 0.35, scale: 1, duration: 0.1 }, cursor);
@@ -472,12 +490,12 @@ const Projects = () => {
 
         tl.to({}, { duration: 0.55, ease: "none" }, cursor + 0.35);
 
+        // WYJŚCIE
         if (index < slides.length - 1) {
           tl.to(
             slide,
             {
               opacity: 0,
-              scale: 0.985,
               y: -10,
               duration: 0.45,
               ease: "power2.inOut",
@@ -514,7 +532,6 @@ const Projects = () => {
       </div>
 
       {/* PINNED */}
-      {/* PINNED */}
       <div
         ref={pinRef}
         className="relative w-full flex flex-col items-center 
@@ -522,7 +539,7 @@ const Projects = () => {
         md:justify-center       /* Laptop/Desktop: środek (ładne pinowanie) */
         md:min-h-screen         /* Laptop/Desktop: pełna wysokość dla efektu */
         2xl:justify-start       /* 2XL: Wracamy do góry, żeby uniknąć dziury */
-        2xl:pt-12               /* 2XL: Lekki odstęp, żeby nie przykleiło się za mocno */
+        2xl:pt-12               /* 2XL: Lekki odstęp */
         "
       >
         <div
@@ -534,7 +551,7 @@ const Projects = () => {
             2xl:min-h-[50vh] 2xl:max-h-[550px]
             rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
-          {/* Intro Text */}
+          {/* Intro Text... (bez zmian) */}
           <div
             data-projects-intro-wrap
             className="absolute left-4 top-1/2 z-20 w-[min(92%,520px)] -translate-y-1/2 text-left text-white sm:left-6 md:left-12 lg:left-16"
@@ -549,7 +566,7 @@ const Projects = () => {
             </p>
           </div>
 
-          {/* Scatter (Stage 1) */}
+          {/* Scatter (Stage 1)... (bez zmian) */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
               const isHero = (image as any).isHero;
@@ -617,7 +634,7 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* Dynamic Title (CENTER TOP) */}
+            {/* Dynamic Title (Bottom Layer - GREEN) */}
             <div
               data-stage2-title
               className="absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
@@ -633,15 +650,17 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Masked Title (over slide area) */}
+            {/* Masked Title (Top Layer - WHITE) */}
+            {/* ZMIANA: Dodano data-stage2-title-masked */}
             <div
               aria-hidden="true"
+              data-stage2-title-masked
               className="absolute inset-0 z-[35] pointer-events-none"
               style={{
                 clipPath:
-                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)))",
+                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) round 18px)",
                 WebkitClipPath:
-                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)))",
+                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) round 18px)",
               }}
             >
               <div className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10">
@@ -653,7 +672,7 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Meta inside image */}
+            {/* Meta, Dots, CTA... (bez zmian) */}
             <div className="absolute inset-0 z-40">
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -680,7 +699,6 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Dots right */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 sm:right-4 md:right-6">
               {projectSlides.map((_, index) => (
                 <span
@@ -691,7 +709,6 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* CTA bottom-center */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 sm:bottom-6 md:bottom-8">
               <Link
                 data-stage2-cta
