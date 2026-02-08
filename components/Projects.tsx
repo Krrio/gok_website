@@ -21,6 +21,7 @@ const scatterImages = [
     xSm: 0.22,
     ySm: 0.28,
     className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
+    isHero: false,
   },
   {
     src: project_2,
@@ -30,6 +31,7 @@ const scatterImages = [
     xSm: -0.2,
     ySm: -0.18,
     className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
+    isHero: false,
   },
   {
     src: project_3,
@@ -324,6 +326,7 @@ const Projects = () => {
             `+=${window.innerHeight * (2.6 + projectSlides.length * 1.25)}`,
           scrub: true,
           pin: pin,
+          pinSpacing: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefreshInit: () => {
@@ -516,7 +519,7 @@ const Projects = () => {
   }, []);
 
   return (
-    <div className="h-[640vh] w-full p-3 sm:p-4 flex flex-col sm:h-[720vh] lg:h-[820vh]">
+    <div className="w-full px-3 pt-3 sm:px-4 sm:pt-4">
       {/* HEADER */}
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
@@ -534,13 +537,7 @@ const Projects = () => {
       {/* PINNED */}
       <div
         ref={pinRef}
-        className="relative w-full flex flex-col items-center 
-        justify-start           /* Mobile: od góry */
-        md:justify-center       /* Laptop/Desktop: środek (ładne pinowanie) */
-        md:min-h-screen         /* Laptop/Desktop: pełna wysokość dla efektu */
-        2xl:justify-start       /* 2XL: Wracamy do góry, żeby uniknąć dziury */
-        2xl:pt-12               /* 2XL: Lekki odstęp */
-        "
+        className="relative flex min-h-[100svh] w-full flex-col items-center justify-center"
       >
         <div
           ref={sectionRef}
@@ -548,7 +545,6 @@ const Projects = () => {
             min-h-[72vh] 
             sm:min-h-[80vh] 
             md:min-h-[85vh] 
-            2xl:min-h-[50vh] 2xl:max-h-[550px]
             rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
           {/* Intro Text... (bez zmian) */}
@@ -569,7 +565,7 @@ const Projects = () => {
           {/* Scatter (Stage 1)... (bez zmian) */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
-              const isHero = (image as any).isHero;
+              const isHero = image.isHero;
               return (
                 <div
                   key={image.alt}
@@ -577,8 +573,8 @@ const Projects = () => {
                   data-hero={isHero ? "true" : "false"}
                   data-x={String(image.x)}
                   data-y={String(image.y)}
-                  data-x-sm={String((image as any).xSm ?? image.x)}
-                  data-y-sm={String((image as any).ySm ?? image.y)}
+                  data-x-sm={String(image.xSm ?? image.x)}
+                  data-y-sm={String(image.ySm ?? image.y)}
                   className={`absolute left-1/2 top-1/2 overflow-hidden rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.35)] h-20 w-28 sm:h-24 sm:w-36 md:h-30 md:w-44 ${image.className}`}
                 >
                   <Image

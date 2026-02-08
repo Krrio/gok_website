@@ -17,6 +17,9 @@ export const mobile_nav_links = [
   { name: "Kontakt", href: "/contact" },
 ];
 
+// logo
+export const logo = "/icons/logo-footer.avif";
+
 // arrow icon
 export const arrow_icon = "/icons/arrow-up.svg";
 
