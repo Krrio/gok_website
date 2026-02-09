@@ -709,7 +709,7 @@ const Projects = () => {
               <Link
                 data-stage2-cta
                 href="/projects"
-                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#d9ff5b] px-5 py-2.5 text-xs font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)] sm:px-6 sm:py-3 sm:text-sm"
+                className="group cursor-pointer pointer-events-auto inline-flex items-center gap-2 rounded-full bg-[#d9ff5b] px-5 py-2.5 text-xs font-semibold text-black shadow-[0_10px_25px_rgba(0,0,0,0.3)] sm:px-6 sm:py-3 sm:text-sm"
               >
                 <AnimatedButtonText text={projectsCtaLabel} />
                 <Image
