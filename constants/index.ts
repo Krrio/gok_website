@@ -96,3 +96,8 @@ export const items = [
 export const curved_line_7 = "/svg/line-7.svg";
 export const curved_line_8 = "/svg/line-8.svg";
 export const star = "/svg/star.svg";
+
+// footer
+export const gps_icon = "/svg/gps.svg";
+export const call_icon = "/svg/call.svg";
+export const mail_icon = "/svg/mail.svg";

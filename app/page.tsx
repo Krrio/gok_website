@@ -4,7 +4,6 @@ import Exercises from "@/components/Exercises";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Projects from "@/components/Projects";
-import Uklad from "@/components/uklad";
 
 const Home = () => {
   return (
@@ -15,7 +14,6 @@ const Home = () => {
       <Contests />
       <Projects />
       <Footer />
-      {/* <Uklad /> */}
     </div>
   );
 };

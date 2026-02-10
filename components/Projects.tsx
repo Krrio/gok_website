@@ -8,10 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import { arrow_icon, project_1, project_2, project_3 } from "@/constants";
-
-/**
- * STAGE 1 (scatter)
- */
 const scatterImages = [
   {
     src: project_1,
@@ -44,10 +40,6 @@ const scatterImages = [
     isHero: true,
   },
 ] as const;
-
-/**
- * STAGE 2
- */
 const projectSlides = [
   {
     src: project_3,
@@ -75,7 +67,6 @@ const Projects = () => {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ REFs for dynamic title update
   const titleARef = useRef<HTMLSpanElement | null>(null);
   const titleAMaskRef = useRef<HTMLSpanElement | null>(null);
 
@@ -89,9 +80,6 @@ const Projects = () => {
       const pin = pinRef.current!;
       if (!section || !pin) return;
 
-      // ----------------------------
-      // Nodes
-      // ----------------------------
       const scatter = gsap.utils.toArray<HTMLElement>(
         "[data-projects-scatter]",
         section,
@@ -108,7 +96,6 @@ const Projects = () => {
 
       const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
 
-      // ZMIANA: Pobieramy oba kontenery tytułów (zielony i maskowany)
       const stage2Title = section.querySelector<HTMLElement>(
         "[data-stage2-title]",
       );
@@ -133,9 +120,6 @@ const Projects = () => {
       const pillEl = section.querySelector<HTMLElement>("[data-stage2-pill]");
       const descEl = section.querySelector<HTMLElement>("[data-stage2-desc]");
 
-      // ----------------------------
-      // Helpers
-      // ----------------------------
       const getBounds = () => section.getBoundingClientRect();
       const clamp = (min: number, value: number, max: number) =>
         Math.min(Math.max(value, min), max);
@@ -165,9 +149,6 @@ const Projects = () => {
       const getRestDropY = () =>
         section.clientHeight * 1.25 + window.innerHeight * 0.9;
 
-      // ----------------------------
-      // SplitType (intro lines)
-      // ----------------------------
       let introSplit: SplitType | null = null;
       let introLineInners: HTMLElement[] = [];
 
@@ -206,9 +187,6 @@ const Projects = () => {
         });
       };
 
-      // ----------------------------
-      // Dynamic Stage2 text
-      // ----------------------------
       const setSlideText = (i: number) => {
         const data = projectSlides[i];
         if (!data) return;
@@ -221,9 +199,6 @@ const Projects = () => {
         if (descEl) descEl.textContent = data.desc;
       };
 
-      // ----------------------------
-      // Initial states
-      // ----------------------------
       const setInitialStates = () => {
         gsap.set(scatter, {
           clearProps:
@@ -261,12 +236,10 @@ const Projects = () => {
 
         gsap.set(stage2Wrap, { opacity: 0, pointerEvents: "none" });
 
-        // ZMIANA: Obliczamy środek karty, aby ustawić pozycję startową tytułu
         const cardHeight = section.clientHeight;
-        // Tytuł w CSS jest na górze. Przesuwamy go w dół o ~40% wysokości karty, żeby zaczął na środku.
+
         const titleStartY = cardHeight * 0.4;
 
-        // Ustawiamy oba tytuły (zielony i maskowany) na pozycji startowej (środek)
         gsap.set(titleWrappers, { opacity: 0, y: titleStartY });
 
         gsap.set([stage2Meta, stage2Btn], { opacity: 0, y: 28 });
@@ -280,7 +253,6 @@ const Projects = () => {
           if (img) gsap.set(img, { scale: 1.0 });
         });
 
-        // initial content
         setSlideText(0);
       };
 
@@ -290,9 +262,6 @@ const Projects = () => {
         (a, b) => getOffset(b, "y") - getOffset(a, "y"),
       );
 
-      // ----------------------------
-      // Timeline
-      // ----------------------------
       const stage2Start = 2.25;
       const slideSlot = 1.25;
       const stage2Base = stage2Start + 0.05;
@@ -339,7 +308,6 @@ const Projects = () => {
         },
       });
 
-      // STAGE 1 (bez zmian)
       if (introP) {
         tl.to(
           introLineInners,
@@ -420,20 +388,16 @@ const Projects = () => {
         );
       }
 
-      // ----------------------------
-      // STAGE 2
-      // ----------------------------
       tl.to(
         stage2Wrap,
         { opacity: 1, duration: 0.35, ease: "power2.out" },
         stage2Start,
       );
 
-      // ZMIANA: Animujemy OBA tytuły (zielony i maskowany) ze środka do góry (y: 0)
       tl.to(
         titleWrappers,
-        { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, // Dłuższy czas dla ładniejszego efektu
-        stage2Start, // Startujemy razem z pojawieniem się kontenera
+        { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" },
+        stage2Start,
       );
 
       tl.to(
@@ -464,7 +428,6 @@ const Projects = () => {
         const dot = dots[index];
         const img = slide.querySelector("img");
 
-        // WEJŚCIE
         tl.to(
           slide,
           {
@@ -476,7 +439,6 @@ const Projects = () => {
           cursor,
         );
 
-        // EFEKT ZOOM (na samym zdjęciu)
         if (img) {
           tl.fromTo(
             img,
@@ -493,7 +455,6 @@ const Projects = () => {
 
         tl.to({}, { duration: 0.55, ease: "none" }, cursor + 0.35);
 
-        // WYJŚCIE
         if (index < slides.length - 1) {
           tl.to(
             slide,
@@ -520,7 +481,6 @@ const Projects = () => {
 
   return (
     <div className="w-full px-3 pt-3 sm:px-4 sm:pt-4">
-      {/* HEADER */}
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
           Projekty
@@ -534,7 +494,6 @@ const Projects = () => {
         </p>
       </div>
 
-      {/* PINNED */}
       <div
         ref={pinRef}
         className="relative flex min-h-[100svh] w-full flex-col items-center justify-center"
@@ -547,7 +506,6 @@ const Projects = () => {
             md:min-h-[85vh] 
             rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
-          {/* Intro Text... (bez zmian) */}
           <div
             data-projects-intro-wrap
             className="absolute left-4 top-1/2 z-20 w-[min(92%,520px)] -translate-y-1/2 text-left text-white sm:left-6 md:left-12 lg:left-16"
@@ -562,7 +520,6 @@ const Projects = () => {
             </p>
           </div>
 
-          {/* Scatter (Stage 1)... (bez zmian) */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
               const isHero = image.isHero;
@@ -592,7 +549,6 @@ const Projects = () => {
             })}
           </div>
 
-          {/* Stage 2 */}
           <div
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none isolate"
@@ -603,7 +559,6 @@ const Projects = () => {
               } as React.CSSProperties
             }
           >
-            {/* Slides (images) */}
             <div className="absolute inset-0 z-30">
               {projectSlides.map((s, idx) => (
                 <div
@@ -630,7 +585,6 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* Dynamic Title (Bottom Layer - GREEN) */}
             <div
               data-stage2-title
               className="absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
@@ -646,8 +600,6 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Masked Title (Top Layer - WHITE) */}
-            {/* ZMIANA: Dodano data-stage2-title-masked */}
             <div
               aria-hidden="true"
               data-stage2-title-masked
@@ -668,7 +620,6 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Meta, Dots, CTA... (bez zmian) */}
             <div className="absolute inset-0 z-40">
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -700,7 +651,7 @@ const Projects = () => {
                 <span
                   key={`dot-${index}`}
                   data-stage2-dot
-                  className="h-1 w-1 rounded-full border border-white/50 bg-white/10"
+                  className="h-0.75 w-0.75 rounded-full border border-white/50 bg-white/10"
                 />
               ))}
             </div>
