@@ -2,7 +2,7 @@ import ExerciseGrid from "./ExerciseGrid";
 
 const Exercises = () => {
   return (
-    <div className="h-full md:h-dvh 2xl:h-[52vh] w-full p-4 md:mt-8 flex flex-col">
+    <div className="h-full md:h-dvh 2xl:h-[52vh] w-full p-4 md:mt-20 flex flex-col">
       <div className="w-full flex flex-col items-start space-y-4 md:space-y-8 mb-8">
         <h1 className="text-5xl! lg:text-6xl! font-semibold text-left">
           Zajęcia i warsztaty
