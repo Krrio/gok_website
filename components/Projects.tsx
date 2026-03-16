@@ -8,7 +8,19 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import AnimatedButtonText from "@/components/AnimatedButtonText";
 import { arrow_icon, project_1, project_2, project_3 } from "@/constants";
-const scatterImages = [
+
+type ScatterImage = {
+  src: string;
+  alt: string;
+  x: number;
+  y: number;
+  xSm?: number;
+  ySm?: number;
+  className: string;
+  isHero: boolean;
+};
+
+const scatterImages: readonly ScatterImage[] = [
   {
     src: project_1,
     alt: "Projekt 1",
@@ -39,7 +51,7 @@ const scatterImages = [
     className: "sm:h-24 sm:w-36 md:h-30 md:w-44",
     isHero: true,
   },
-] as const;
+];
 const projectSlides = [
   {
     src: project_3,
@@ -496,7 +508,7 @@ const Projects = () => {
 
       <div
         ref={pinRef}
-        className="relative flex min-h-[100svh] w-full flex-col items-center justify-center"
+        className="relative flex min-h-svh w-full flex-col items-center justify-center"
       >
         <div
           ref={sectionRef}
