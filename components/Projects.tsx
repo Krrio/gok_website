@@ -80,7 +80,7 @@ const Projects = () => {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const titleARef = useRef<HTMLSpanElement | null>(null);
-  const titleBRef = useRef<HTMLSpanElement | null>(null); // Dodany ref na zielony tekst
+  const titleBRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
@@ -108,7 +108,6 @@ const Projects = () => {
 
       const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
 
-      // Pobieramy oba elementy tytułu do tablicy (będą animowane jednocześnie)
       const stage2Titles = gsap.utils.toArray<HTMLElement>(
         "[data-stage2-title]",
         section,
@@ -151,7 +150,14 @@ const Projects = () => {
       const getCardW = () => Math.min(section.clientWidth * 0.7, 680);
       const getCardH = () => clamp(200, window.innerHeight * 0.42, 420);
 
-      const getSlideW = () => clamp(280, section.clientWidth * 0.92, 980);
+      const getSlideW = () => {
+        const w = section.clientWidth;
+        const calculatedW = Math.min(
+          w * 0.92,
+          Math.max(window.innerWidth * 0.6, 980),
+        );
+        return clamp(280, calculatedW, 1400);
+      };
       const getSlideH = () => clamp(240, window.innerHeight * 0.56, 520);
       const getHeroW2 = () => getSlideW();
       const getHeroH2 = () => getSlideH();
@@ -201,7 +207,6 @@ const Projects = () => {
         const data = projectSlides[i];
         if (!data) return;
 
-        // Aktualizujemy obie warstwy tekstowe
         if (titleARef.current) titleARef.current.textContent = data.titleA;
         if (titleBRef.current) titleBRef.current.textContent = data.titleA;
         if (pillEl) pillEl.textContent = data.pill;
@@ -248,12 +253,15 @@ const Projects = () => {
         const cardHeight = section.clientHeight;
         const titleStartY = cardHeight * 0.4;
 
-        // Inicjalizacja obu tytułów
         gsap.set(stage2Titles, { opacity: 0, y: titleStartY });
-        gsap.set([stage2Meta, stage2Btn], { opacity: 0, y: 28 });
+        if (stage2Meta) gsap.set(stage2Meta, { opacity: 0, y: 28 });
+        if (stage2Btn) gsap.set(stage2Btn, { opacity: 0, y: 28 });
         gsap.set(dots, { opacity: 0.35, scale: 1 });
-        gsap.set(slides, { opacity: 0, scale: 1, y: 18 });
-
+        gsap.set(slides, {
+          opacity: 0,
+          scale: 1,
+          y: (i) => (i === 0 ? 0 : 18),
+        });
         slides.forEach((slide) => {
           const img = slide.querySelector("img");
           if (img) gsap.set(img, { scale: 1.0 });
@@ -403,24 +411,27 @@ const Projects = () => {
         stage2Start,
       );
 
-      // Animujemy obie warstwy tytułu jednocześnie
       tl.to(
         stage2Titles,
         { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" },
         stage2Start,
       );
 
-      tl.to(
-        stage2Meta,
-        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
-        stage2Start + 0.25,
-      );
+      if (stage2Meta) {
+        tl.to(
+          stage2Meta,
+          { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+          stage2Start + 0.25,
+        );
+      }
 
-      tl.to(
-        stage2Btn,
-        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
-        stage2Start + 0.32,
-      );
+      if (stage2Btn) {
+        tl.to(
+          stage2Btn,
+          { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+          stage2Start + 0.32,
+        );
+      }
 
       tl.to(dots, { opacity: 0.35, duration: 0.2, ease: "none" }, stage2Start);
 
@@ -438,20 +449,28 @@ const Projects = () => {
         const dot = dots[index];
         const img = slide.querySelector("img");
 
-        tl.to(
-          slide,
-          { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
-          cursor,
-        );
-
-        if (img) {
-          tl.fromTo(
-            img,
-            { scale: 1.1 },
-            { scale: 1.0, duration: 0.8, ease: "power2.out" },
+        // --- ZMIENIONY FRAGMENT ---
+        if (index === 0) {
+          // Dla pierwszego slajdu robimy idealne przejście (crossfade) z heroEl
+          tl.to(slide, { opacity: 1, duration: 0.2, ease: "none" }, cursor);
+        } else {
+          // Normalna animacja wjazdu dla kolejnych slajdów
+          tl.to(
+            slide,
+            { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
             cursor,
           );
+
+          if (img) {
+            tl.fromTo(
+              img,
+              { scale: 1.1 },
+              { scale: 1.0, duration: 0.8, ease: "power2.out" },
+              cursor,
+            );
+          }
         }
+        // --- KONIEC ZMIENIONEGO FRAGMENTU ---
 
         if (dot) {
           tl.to(dots, { opacity: 0.35, scale: 1, duration: 0.1 }, cursor);
@@ -501,12 +520,12 @@ const Projects = () => {
         <div
           ref={sectionRef}
           className="relative w-full 
-            min-h-[72vh] 
-            sm:min-h-[80vh] 
-            md:min-h-[85vh] 
+            h-[72vh] 
+            sm:h-[80vh] 
+            md:h-[85vh] 
+            max-h-[800px]
             rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
-          {/* Intro text */}
           <div
             data-projects-intro-wrap
             className="absolute left-4 top-1/2 z-20 w-[min(92%,520px)] -translate-y-1/2 text-left text-white sm:left-6 md:left-12 lg:left-16"
@@ -521,7 +540,6 @@ const Projects = () => {
             </p>
           </div>
 
-          {/* Scatter images */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
               const isHero = image.isHero;
@@ -551,18 +569,16 @@ const Projects = () => {
             })}
           </div>
 
-          {/* Stage 2 — slides + warstwowy tytuł */}
           <div
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none isolate"
             style={
               {
-                "--slide-w": "clamp(280px, 92%, 980px)",
+                "--slide-w": "clamp(280px, min(92%, max(60vw, 980px)), 1400px)",
                 "--slide-h": "clamp(240px, 56vh, 520px)",
               } as React.CSSProperties
             }
           >
-            {/* Slide images */}
             <div className="absolute inset-0 z-30">
               {projectSlides.map((s, idx) => (
                 <div
@@ -589,9 +605,7 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* Title — Warstwowy Clip-Path */}
             <div className="absolute inset-0 z-[36] pointer-events-none isolate">
-              {/* 1. Warstwa pod spodem: Biały tekst widoczny poza obrazkiem */}
               <div
                 data-stage2-title
                 className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
@@ -603,7 +617,6 @@ const Projects = () => {
                 </div>
               </div>
 
-              {/* 2. Warstwa na wierzchu: Zielony tekst docięty do obszaru slajdu */}
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
@@ -624,33 +637,13 @@ const Projects = () => {
               </div>
             </div>
 
-            {/* Meta — pill + desc */}
             <div className="absolute inset-0 z-40">
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                 style={{ width: "var(--slide-w)", height: "var(--slide-h)" }}
-              >
-                <div
-                  data-stage2-meta
-                  className="absolute left-4 bottom-4 max-w-[440px] sm:left-6 sm:bottom-6 md:left-8 md:bottom-8 sm:max-w-[520px]"
-                >
-                  <div
-                    data-stage2-pill
-                    className="inline-flex items-center rounded-full border border-white/25 bg-white/5 px-3 py-1 text-[11px] text-white/85 sm:text-xs"
-                  >
-                    {projectSlides[0].pill}
-                  </div>
-                  <div
-                    data-stage2-desc
-                    className="mt-2 text-white/80 text-[13px] leading-relaxed sm:mt-3 sm:text-sm md:text-base"
-                  >
-                    {projectSlides[0].desc}
-                  </div>
-                </div>
-              </div>
+              ></div>
             </div>
 
-            {/* Dots */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 sm:right-4 md:right-6">
               {projectSlides.map((_, index) => (
                 <span
@@ -661,7 +654,6 @@ const Projects = () => {
               ))}
             </div>
 
-            {/* CTA */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 sm:bottom-6 md:bottom-8">
               <Link
                 data-stage2-cta

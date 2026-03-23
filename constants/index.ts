@@ -58,9 +58,9 @@ export const competition_3 = "/images/competition-images/competition_3.avif";
 export const competition_4 = "/images/competition-images/competition_4.avif";
 
 // projects photos
-export const project_1 = "/images/projects-images/project1.avif";
-export const project_2 = "/images/projects-images/project2.avif";
-export const project_3 = "/images/projects-images/project3.avif";
+export const project_1 = "/images/projects-images/project1_3.avif";
+export const project_2 = "/images/projects-images/project1_2.avif";
+export const project_3 = "/images/projects-images/project1_1.avif";
 
 // competitions descriptions
 export const items = [
