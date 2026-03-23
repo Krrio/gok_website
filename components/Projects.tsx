@@ -52,6 +52,7 @@ const scatterImages: readonly ScatterImage[] = [
     isHero: true,
   },
 ];
+
 const projectSlides = [
   {
     src: project_3,
@@ -78,9 +79,8 @@ const projectsCtaLabel = "Zobacz projekty";
 const Projects = () => {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
-
   const titleARef = useRef<HTMLSpanElement | null>(null);
-  const titleAMaskRef = useRef<HTMLSpanElement | null>(null);
+  const titleBRef = useRef<HTMLSpanElement | null>(null); // Dodany ref na zielony tekst
 
   useEffect(() => {
     if (!sectionRef.current || !pinRef.current) return;
@@ -108,13 +108,11 @@ const Projects = () => {
 
       const stage2Wrap = section.querySelector<HTMLElement>("[data-stage2]");
 
-      const stage2Title = section.querySelector<HTMLElement>(
+      // Pobieramy oba elementy tytułu do tablicy (będą animowane jednocześnie)
+      const stage2Titles = gsap.utils.toArray<HTMLElement>(
         "[data-stage2-title]",
+        section,
       );
-      const stage2TitleMasked = section.querySelector<HTMLElement>(
-        "[data-stage2-title-masked]",
-      );
-      const titleWrappers = [stage2Title, stage2TitleMasked].filter(Boolean);
 
       const stage2Meta =
         section.querySelector<HTMLElement>("[data-stage2-meta]");
@@ -203,10 +201,9 @@ const Projects = () => {
         const data = projectSlides[i];
         if (!data) return;
 
+        // Aktualizujemy obie warstwy tekstowe
         if (titleARef.current) titleARef.current.textContent = data.titleA;
-        if (titleAMaskRef.current)
-          titleAMaskRef.current.textContent = data.titleA;
-
+        if (titleBRef.current) titleBRef.current.textContent = data.titleA;
         if (pillEl) pillEl.textContent = data.pill;
         if (descEl) descEl.textContent = data.desc;
       };
@@ -249,15 +246,12 @@ const Projects = () => {
         gsap.set(stage2Wrap, { opacity: 0, pointerEvents: "none" });
 
         const cardHeight = section.clientHeight;
-
         const titleStartY = cardHeight * 0.4;
 
-        gsap.set(titleWrappers, { opacity: 0, y: titleStartY });
-
+        // Inicjalizacja obu tytułów
+        gsap.set(stage2Titles, { opacity: 0, y: titleStartY });
         gsap.set([stage2Meta, stage2Btn], { opacity: 0, y: 28 });
-
         gsap.set(dots, { opacity: 0.35, scale: 1 });
-
         gsap.set(slides, { opacity: 0, scale: 1, y: 18 });
 
         slides.forEach((slide) => {
@@ -340,6 +334,7 @@ const Projects = () => {
           ">",
         );
       }
+
       tl.to(
         scatter,
         {
@@ -353,6 +348,7 @@ const Projects = () => {
         },
         0,
       );
+
       if (restByBottomFirst.length) {
         tl.to(
           restByBottomFirst,
@@ -371,6 +367,7 @@ const Projects = () => {
           0.62,
         );
       }
+
       if (heroEl) {
         tl.to(
           heroEl,
@@ -406,8 +403,9 @@ const Projects = () => {
         stage2Start,
       );
 
+      // Animujemy obie warstwy tytułu jednocześnie
       tl.to(
-        titleWrappers,
+        stage2Titles,
         { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" },
         stage2Start,
       );
@@ -442,12 +440,7 @@ const Projects = () => {
 
         tl.to(
           slide,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            ease: "power2.out",
-          },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
           cursor,
         );
 
@@ -470,12 +463,7 @@ const Projects = () => {
         if (index < slides.length - 1) {
           tl.to(
             slide,
-            {
-              opacity: 0,
-              y: -10,
-              duration: 0.45,
-              ease: "power2.inOut",
-            },
+            { opacity: 0, y: -10, duration: 0.45, ease: "power2.inOut" },
             cursor + 0.9,
           );
         }
@@ -518,6 +506,7 @@ const Projects = () => {
             md:min-h-[85vh] 
             rounded-[28px] md:rounded-[32px] bg-[#0f0f0f] overflow-hidden px-4 sm:px-6 md:px-12 lg:px-16"
         >
+          {/* Intro text */}
           <div
             data-projects-intro-wrap
             className="absolute left-4 top-1/2 z-20 w-[min(92%,520px)] -translate-y-1/2 text-left text-white sm:left-6 md:left-12 lg:left-16"
@@ -532,6 +521,7 @@ const Projects = () => {
             </p>
           </div>
 
+          {/* Scatter images */}
           <div className="absolute inset-0 z-10 pointer-events-none">
             {scatterImages.map((image, index) => {
               const isHero = image.isHero;
@@ -561,6 +551,7 @@ const Projects = () => {
             })}
           </div>
 
+          {/* Stage 2 — slides + warstwowy tytuł */}
           <div
             data-stage2
             className="absolute inset-0 z-30 pointer-events-none isolate"
@@ -571,6 +562,7 @@ const Projects = () => {
               } as React.CSSProperties
             }
           >
+            {/* Slide images */}
             <div className="absolute inset-0 z-30">
               {projectSlides.map((s, idx) => (
                 <div
@@ -585,7 +577,7 @@ const Projects = () => {
                 >
                   <Image
                     src={s.src}
-                    alt={`${s.titleA}`}
+                    alt={s.titleA}
                     fill
                     className="object-cover"
                     sizes="(min-width: 1024px) 1400px, 92vw"
@@ -597,41 +589,42 @@ const Projects = () => {
               ))}
             </div>
 
-            <div
-              data-stage2-title
-              className="absolute left-1/2 top-6 z-20 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
-            >
-              <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none text-white sm:text-[clamp(56px,9vw,140px)]">
-                <span
-                  ref={titleARef}
-                  data-stage2-title-a
-                  className="block text-[#d9ff5b]"
-                >
-                  {projectSlides[0].titleA}
-                </span>
-              </div>
-            </div>
-
-            <div
-              aria-hidden="true"
-              data-stage2-title-masked
-              className="absolute inset-0 z-[35] pointer-events-none"
-              style={{
-                clipPath:
-                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) round 18px)",
-                WebkitClipPath:
-                  "inset(calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) calc(50% - (var(--slide-h) / 2)) calc(50% - (var(--slide-w) / 2)) round 18px)",
-              }}
-            >
-              <div className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10">
-                <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none text-white sm:text-[clamp(56px,9vw,140px)]">
-                  <span ref={titleAMaskRef} className="block text-white">
+            {/* Title — Warstwowy Clip-Path */}
+            <div className="absolute inset-0 z-[36] pointer-events-none isolate">
+              {/* 1. Warstwa pod spodem: Biały tekst widoczny poza obrazkiem */}
+              <div
+                data-stage2-title
+                className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
+              >
+                <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none sm:text-[clamp(56px,9vw,140px)]">
+                  <span ref={titleARef} className="block text-white">
                     {projectSlides[0].titleA}
                   </span>
                 </div>
               </div>
+
+              {/* 2. Warstwa na wierzchu: Zielony tekst docięty do obszaru slajdu */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  clipPath:
+                    "inset(calc(50% - var(--slide-h) / 2) calc(50% - var(--slide-w) / 2) round 18px)",
+                }}
+              >
+                <div
+                  data-stage2-title
+                  className="absolute left-1/2 top-6 -translate-x-1/2 text-center w-fit mx-auto sm:top-8 md:top-10"
+                >
+                  <div className="text-[clamp(42px,12vw,140px)] font-semibold leading-none sm:text-[clamp(56px,9vw,140px)]">
+                    <span ref={titleBRef} className="block text-[#d9ff5b]">
+                      {projectSlides[0].titleA}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
+            {/* Meta — pill + desc */}
             <div className="absolute inset-0 z-40">
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -647,7 +640,6 @@ const Projects = () => {
                   >
                     {projectSlides[0].pill}
                   </div>
-
                   <div
                     data-stage2-desc
                     className="mt-2 text-white/80 text-[13px] leading-relaxed sm:mt-3 sm:text-sm md:text-base"
@@ -658,6 +650,7 @@ const Projects = () => {
               </div>
             </div>
 
+            {/* Dots */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 sm:right-4 md:right-6">
               {projectSlides.map((_, index) => (
                 <span
@@ -668,6 +661,7 @@ const Projects = () => {
               ))}
             </div>
 
+            {/* CTA */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 sm:bottom-6 md:bottom-8">
               <Link
                 data-stage2-cta
